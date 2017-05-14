@@ -28,7 +28,7 @@ angular.module('acServerManager')
 		$scope.startACServer = function() {
 			ProcessService.StartACServer(function(result) {
 				if (!(result[0] === 'O' && result[1] === 'K')) {
-					createAlert('warning', 'Failed to start AC server', true)
+					createAlert('warning', 'Failed to start AC server', 'pe-7s-server');
 				}
 			})
 		}
@@ -37,7 +37,7 @@ angular.module('acServerManager')
 			$scope.stopSTrackerServer();
 			ProcessService.StopACServer(function(result) {
 				if (!(result[0] === 'O' && result[1] === 'K')) {
-					createAlert('warning', 'Failed to stop AC server', true)
+					createAlert('warning', 'Failed to stop AC server', 'pe-7s-server');
 				}
 			})
 		}
@@ -45,7 +45,7 @@ angular.module('acServerManager')
 		$scope.restartACServer = function() {
 			ProcessService.RestartACServer(function(result) {
 				if (!(result[0] === 'O' && result[1] === 'K')) {
-					createAlert('warning', 'Failed to restart AC server', true)
+					createAlert('warning', 'Failed to restart AC server', 'pe-7s-server');
 				}
 			})
 		}
@@ -53,7 +53,7 @@ angular.module('acServerManager')
 		$scope.startSTrackerServer = function() {
 			ProcessService.StartSTrackerServer(function(result) {
 				if (!(result[0] === 'O' && result[1] === 'K')) {
-					createAlert('warning', 'Failed to start stracker', true)
+					createAlert('warning', 'Failed to start stracker', 'pe-7s-server');
 				}
 			})
 		}
@@ -61,7 +61,7 @@ angular.module('acServerManager')
 		$scope.stopSTrackerServer = function() {
 			ProcessService.StopSTrackerServer(function(result) {
 				if (!(result[0] === 'O' && result[1] === 'K')) {
-					createAlert('warning', 'Failed to stop stracker', true)
+					createAlert('warning', 'Failed to stop stracker', 'pe-7s-server');
 				}
 			})
 		}
@@ -69,7 +69,7 @@ angular.module('acServerManager')
 		$scope.restartSTrackerServer = function() {
 			ProcessService.RestartSTrackerServer(function(result) {
 				if (!(result[0] === 'O' && result[1] === 'K')) {
-					createAlert('warning', 'Failed to restart stracker', true)
+					createAlert('warning', 'Failed to restart stracker', 'pe-7s-server');
 				}
 			})
 		}
@@ -78,14 +78,14 @@ angular.module('acServerManager')
 			$scope.alerts.splice(index, 1);
 		};
 		
-		function createAlert(type, msg, autoClose) {
-			var alert = { type: type, msg: msg};
-			$scope.alerts.push(alert);
-			if (autoClose) {
-				$timeout(function(){
-					$scope.alerts.splice($scope.alerts.indexOf(alert), 1);
-				}, 3000);
-			}
+		function createAlert(type, msg, icon) {
+			$.notify({
+            	icon: icon,
+            	message: msg
+            },{
+                type: type,
+                timer: 3000
+            });
 		}
 	})
 	.controller('ServerCtrl', function ($scope, $filter, $timeout, CarService, TrackService, ServerService, BookService, PracticeService, QualifyService, RaceService, TyreService, WeatherService) {
@@ -328,7 +328,7 @@ angular.module('acServerManager')
 			$scope.$broadcast('show-errors-check-validity');
 			
 			if ($scope.form.$invalid) { 
-				createAlert('warning', 'There are errors on the form', true);
+				createAlert('warning', 'There are errors on the form', 'pe-7s-note');
 				return; 
 			}
 			
@@ -418,9 +418,9 @@ angular.module('acServerManager')
 				});
 				
 				if (saved) {
-					createAlert('success', 'Saved successfully', true);
-				} else {
-					createAlert('warning', 'Save failed', true);
+					createAlert('success', 'Saved successfully', 'pe-7s-star');
+					} else {
+					createAlert('warning', 'Save failed', 'pe-7s-close-circle');
 				}
 			} catch (e) {
 				console.log('Error - ' + e);
@@ -448,15 +448,15 @@ angular.module('acServerManager')
 			var sunAngle = multiplier * 16;
 			return sunAngle;
 		}
-		
-		function createAlert(type, msg, autoClose) {
-			var alert = { type: type, msg: msg};
-			$scope.alerts.push(alert);
-			if (autoClose) {
-				$timeout(function(){
-					$scope.alerts.splice($scope.alerts.indexOf(alert), 1);
-				}, 3000);
-			}
+
+		function createAlert(type, msg, icon) {
+			$.notify({
+            	icon: icon,
+            	message: msg
+            },{
+                type: type,
+                timer: 3000
+            });
 		}
 		
 		function findInArray(arr, search) {
@@ -529,7 +529,7 @@ angular.module('acServerManager')
 			$scope.$broadcast('show-errors-check-validity');
 			
 			if ($scope.form.$invalid) { 
-				createAlert('warning', 'There are errors on the form', true);
+				createAlert('warning', 'There are errors on the form', 'pe-7s-note');
 				return; 
 			}
 			
@@ -562,9 +562,9 @@ angular.module('acServerManager')
 			
 			EntryListService.SaveEntryList(data, function(result) {
 				if (result[0] === 'O' && result[1] === 'K') {
-					createAlert('success', 'Saved successfully', true);
-				} else {
-					createAlert('warning', 'Save failed', true);
+					createAlert('success', 'Saved successfully', 'pe-7s-star');
+					} else {
+					createAlert('warning', 'Save failed', 'pe-7s-close-circle');
 				}
 			});
 		}
@@ -579,7 +579,7 @@ angular.module('acServerManager')
 			$scope.$broadcast('show-errors-check-validity');
 			
 			if ($scope.createForm.$invalid) { 
-				createAlert('warning', 'There are errors on the form', true);
+				createAlert('warning', 'There are errors on the form', 'pe-7s-note');
 				return; 
 			}
 			
@@ -588,7 +588,7 @@ angular.module('acServerManager')
 					$scope.drivers.push($scope.newDriver);
 					$scope.newDriver = {};
 				} else {
-					createAlert('warning', 'Save failed', true);
+					createAlert('warning', 'Save failed', 'pe-7s-close-circle');
 				}
 			});
 		}
@@ -605,7 +605,7 @@ angular.module('acServerManager')
 						});
 					}
 				} else {
-					createAlert('warning', 'Delete failed', true);
+					createAlert('warning', 'Delete failed', 'pe-7s-close-circle');
 				}
 			});
 		}
@@ -616,14 +616,14 @@ angular.module('acServerManager')
 			$scope.newEntry.GUID = driver.GUID;
 		}
 		
-		function createAlert(type, msg, autoClose) {
-			var alert = { type: type, msg: msg};
-			$scope.alerts.push(alert);
-			if (autoClose) {
-				$timeout(function(){
-					$scope.alerts.splice($scope.alerts.indexOf(alert), 1);
-				}, 3000);
-			}
+		function createAlert(type, msg, icon) {
+			$.notify({
+            	icon: icon,
+            	message: msg
+            },{
+                type: type,
+                timer: 3000
+            });
 		}
 	})
 	.controller('RulesCtrl', function($scope, $timeout, ServerService, DynamicTrackService) {
@@ -662,7 +662,7 @@ angular.module('acServerManager')
 			$scope.$broadcast('show-errors-check-validity');
 			
 			if ($scope.form.$invalid) { 
-				createAlert('warning', 'There are errors on the form', true);
+				createAlert('warning', 'There are errors on the form', 'pe-7s-note');
 				return; 
 			}
 			
@@ -693,23 +693,23 @@ angular.module('acServerManager')
 				});
 				
 				if (saved) {
-					createAlert('success', 'Saved successfully', true);
-				} else {
-					reateAlert('success', 'Save failed', true);
+					createAlert('success', 'Saved successfully', 'pe-7s-star');
+					} else {
+					createAlert('warning', 'Save failed', 'pe-7s-close-circle');
 				}
 			} catch (e) {
 				console.log('Error - ' + e);
 			}
 		}
 		
-		function createAlert(type, msg, autoClose) {
-			var alert = { type: type, msg: msg};
-			$scope.alerts.push(alert);
-			if (autoClose) {
-				$timeout(function(){
-					$scope.alerts.splice($scope.alerts.indexOf(alert), 1);
-				}, 3000);
-			}
+		function createAlert(type, msg, icon) {
+			$.notify({
+            	icon: icon,
+            	message: msg
+            },{
+                type: type,
+                timer: 3000
+            });
 		}
 	})
 	.controller('AdvancedCtrl', function($scope, $timeout, ServerService) {	
@@ -726,7 +726,7 @@ angular.module('acServerManager')
 			$scope.$broadcast('show-errors-check-validity');
 			
 			if ($scope.form.$invalid) { 
-				createAlert('warning', 'There are errors on the form', true);
+				createAlert('warning', 'There are errors on the form', 'pe-7s-note');
 				return; 
 			}
 			
@@ -738,9 +738,9 @@ angular.module('acServerManager')
 			
 				ServerService.SaveServerDetails($scope.server, function(result) {
 					if (result[0] === 'O' && result[1] === 'K') {
-						createAlert('success', 'Saved successfully', true);
+						createAlert('success', 'Saved successfully', 'pe-7s-star');
 					} else {
-						createAlert('warning', 'Save failed', true);
+						createAlert('warning', 'Save failed', 'pe-7s-close-circle');
 					}
 				});
 			} catch (e) {
@@ -749,14 +749,14 @@ angular.module('acServerManager')
 			
 		}
 		
-		function createAlert(type, msg, autoClose) {
-			var alert = { type: type, msg: msg};
-			$scope.alerts.push(alert);
-			if (autoClose) {
-				$timeout(function(){
-					$scope.alerts.splice($scope.alerts.indexOf(alert), 1);
-				}, 3000);
-			}
+		function createAlert(type, msg, icon) {
+			$.notify({
+            	icon: icon,
+            	message: msg
+            },{
+                type: type,
+                timer: 3000
+            });
 		}
 	})
 	.controller('HelpCtrl', function($scope) {

@@ -103,7 +103,6 @@
 						<form>
 							<fieldset>
 								<legend>Assetto Corsa Server</legend>
-								
 								<div class="row">
 									<div class="col-sm-2">
 										<p class="lead" ng-class="acServerStatus ? 'bg-success' : 'bg-danger'">{{acServerStatus === 1 ? 'Running' : acServerStatus === 0 ? 'Stopped' : 'Loading...'}}</p>
@@ -130,7 +129,6 @@
 							
 							<fieldset class="top10" ng-hide="sTrackerServerStatus === -2">
 								<legend>sTracker Server</legend>
-								
 								<div class="row">
 									<div class="col-sm-2">
 										<p class="lead" ng-class="sTrackerServerStatus ? 'bg-success' : 'bg-danger'">{{sTrackerServerStatus === 1 ? 'Running' : acServerStatus === 0 ? 'Stopped' : 'Loading...'}}</p>
@@ -157,7 +155,6 @@
 
 							<fieldset class="top10" ng-show="acServerStatus === 1">
 								<legend>Server Status</legend>
-								
 								<div class="row">
 									<div class="col-sm-12">
 										<p>Current Session: {{serverStatus.session}}</p>

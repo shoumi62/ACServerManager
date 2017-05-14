@@ -130,7 +130,7 @@
 								<div class="col-sm-4">
 									<div class="form-group" show-errors>
 										<label>Kick Vote Quorum</label>
-										<input class="form-control" name="kick_vote_quorum" ng-model="server.KICK_QUORUM" required/>
+										<input class="form-control" name="kick_vote_quorum" ng-model="server.KICK_QUORUM"/>
 									</div>
 								</div>
 								
@@ -162,33 +162,32 @@
 								</div>
 								
 								<div class="col-sm-4">
-									<div class="form-group show-errors>
+									<div class="form-group" show-errors>
 										<label>Result Screen Time</label>
 										<input class="form-control" name="result_screen_time" ng-model="server.RESULT_SCREEN_TIME" required>
 									 </div>
 								</div>
-								
 							</div>
 							
 							<fieldset class="top10">
 								<legend>Plugin</legend>
 								<div class="row">
 									<div class="col-sm-4">
-										<div class="form-group" show-errors>
+										<div class="form-group">
 											<label>UDP Local Port</label>
-											<input class="form-control" type="number" min="0" string-to-number name="udp_local_port" ng-model="server.UDP_PLUGIN_LOCAL_PORT"/>
+											<input class="form-control" type="number" string-to-number name="udp_local_port" ng-model="server.UDP_PLUGIN_LOCAL_PORT"/>
 										</div>
 									</div>
 									
 									<div class="col-sm-4">
-										<div class="form-group" show-errors>
+										<div class="form-group">
 											<label>UDP Address</label>
 											<input class="form-control" name="udp_address" ng-model="server.UDP_PLUGIN_ADDRESS"/>
 										</div>
 									</div>
 									
 									<div class="col-sm-4">
-										<div class="form-group" show-errors>
+										<div class="form-group">
 											<label>Auth Address</label>
 											<input class="form-control" name="udp_local_port" ng-model="server.AUTH_PLUGIN_ADDRESS"/>
 										</div>

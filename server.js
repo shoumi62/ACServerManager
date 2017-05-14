@@ -66,7 +66,7 @@ function saveEntryList() {
 function getDirectories(srcpath) {
 	try {
 		return fs.readdirSync(srcpath).filter(function (file) {
-			return fs.statSync(srcpath + "/" + file).isDirectory();
+			return fs.statSync(srcpath + '/' + file).isDirectory();
 		});
 	} catch (e) {
 		console.log('Error - ' + e);
@@ -530,7 +530,7 @@ app.get('/api/weather', function (req, res) {
 		var weather = [];
 
 		Object.keys(config).forEach(function (key) {
-			if (key.indexOf("WEATHER_") === 0) {
+			if (key.indexOf('WEATHER_') === 0) {
 				weather.push(config[key]);
 			}
 		});
@@ -548,7 +548,7 @@ app.get('/api/weather', function (req, res) {
 app.post('/api/weather', function (req, res) {
 	try {
 		Object.keys(config).forEach(function (key) {
-			if (key.indexOf("WEATHER_") === 0) {
+			if (key.indexOf('WEATHER_') === 0) {
 				delete config[key];
 			}
 		});
@@ -570,7 +570,7 @@ app.post('/api/weather', function (req, res) {
 // get tracks available on server
 app.get('/api/tracks', function (req, res) {
 	try {
-		var trackNames = fs.readdirSync(contentPath + "/tracks");
+		var trackNames = fs.readdirSync('frontend/img' + '/tracks');
 		var tracks = [];
 
 		for (var trackName in trackNames) {
@@ -579,11 +579,11 @@ app.get('/api/tracks', function (req, res) {
 			};
 
 			try {
-				var configs = getDirectories(contentPath + "/tracks/" + trackNames[trackName] + "/ui");
+				var configs = getDirectories('frontend/img' + '/tracks/' + trackNames[trackName] + '/ui');
 				track.configs = configs;
 			}
 			catch (e) {
-				//console.log(e);
+				console.log('Track not found: ' + trackName);
 			}
 
 			tracks.push(track);
@@ -601,7 +601,7 @@ app.get('/api/tracks', function (req, res) {
 // get track
 app.get('/api/tracks/:track', function (req, res) {
 	try {
-		var trackDetails = fs.readFileSync(contentPath + '/tracks/' + req.params.track + '/ui/ui_track.json', 'utf-8');
+		var trackDetails = fs.readFileSync('frontend/img' + '/tracks/' + req.params.track + '/ui/ui_track.json', 'utf-8');
 		res.status(200);
 		res.send(trackDetails);
 	} catch (e) {
@@ -615,7 +615,7 @@ app.get('/api/tracks/:track', function (req, res) {
 app.get('/api/tracks/:track/image', function (req, res) {
 	try {
 		res.status(200);;
-		var image = fs.readFileSync(contentPath + '/tracks/' + req.params.track + '/ui/preview.png');
+		var image = fs.readFileSync('frontend/img' + '/tracks/' + req.params.track + '/ui/preview.png');
 		res.contentType('image/jpeg');
 		res.send(image);
 	} catch (e) {
@@ -628,7 +628,7 @@ app.get('/api/tracks/:track/image', function (req, res) {
 // get track config
 app.get('/api/tracks/:track/:config', function (req, res) {
 	try {
-		var trackDetails = fs.readFileSync(contentPath + '/tracks/' + req.params.track + '/ui/' + req.params.config + '/ui_track.json', 'utf-8');
+		var trackDetails = fs.readFileSync('frontend/img' + '/tracks/' + req.params.track + '/ui/' + req.params.config + '/ui_track.json', 'utf-8');
 		res.status(200);
 		res.send(trackDetails);
 	} catch (e) {
@@ -642,7 +642,7 @@ app.get('/api/tracks/:track/:config', function (req, res) {
 app.get('/api/tracks/:track/:config/image', function (req, res) {
 	try {
 		res.status(200);;
-		var image = fs.readFileSync(contentPath + '/tracks/' + req.params.track + '/ui/' + req.params.config + '/preview.png');
+		var image = fs.readFileSync('frontend/img' + '/tracks/' + req.params.track + '/ui/' + req.params.config + '/preview.png');
 		res.contentType('image/jpeg');
 		res.send(image);
 	} catch (e) {
@@ -655,7 +655,7 @@ app.get('/api/tracks/:track/:config/image', function (req, res) {
 // get cars available on server
 app.get('/api/cars', function (req, res) {
 	try {
-		var cars = fs.readdirSync(contentPath + "/cars");
+		var cars = fs.readdirSync(contentPath + '/cars');
 		res.status(200);
 		res.send(cars);
 	} catch (e) {
@@ -670,10 +670,10 @@ app.get('/api/cars/:car', function (req, res) {
 	try {
 		var skins = {}
 		try {
-			var skins = fs.readdirSync(contentPath + "/cars/" + req.params.car + "/skins");
+			var skins = fs.readdirSync(contentPath + '/cars/' + req.params.car + '/skins');
 		}
 		catch (e) {
-			console.log("Car not found: " + req.params.car);
+			console.log('Car not found: ' + req.params.car);
 		}
 
 		res.status(200);
@@ -709,9 +709,9 @@ app.post('/api/entrylist', function (req, res) {
 		saveEntryList();
 	}
 	catch (e) {
-		console.log("Failed to save entry list");
+		console.log('Error: POST/api/entrylist - ' + e);
 		res.status(500);
-		res.send("Failed to save entry list")
+		res.send('Application error')
 	}
 
 	res.status(200);
@@ -733,9 +733,9 @@ app.get('/api/drivers', function (req, res) {
 		});
 	}
 	catch (e) {
-		console.log("Failed to retrieve drivers");
+		console.log('Error: GET/api/drivers - ' + e);
 		res.status(500);
-		res.send("Failed to retrieve drivers");
+		res.send('Application error');
 	}
 });
 
@@ -764,9 +764,9 @@ app.post('/api/drivers', function (req, res) {
 		});
 	}
 	catch (e) {
-		console.log("Failed to save drivers");
+		console.log('Error: POST/api/drivers - ' + e);
 		res.status(500);
-		res.send("Failed to save drivers");
+		res.send('Application error');
 	}
 
 	res.status(200);
@@ -778,7 +778,7 @@ app.delete('/api/drivers/:guid', function (req, res) {
 	try {
 		var guid = req.params.guid;
 		if (!guid) {
-			throw "GUID not provided";
+			throw 'GUID not provided';
 		}
 
 		jsonfile.readFile(__dirname + '/drivers.json', function (err, data) {
@@ -797,7 +797,7 @@ app.delete('/api/drivers/:guid', function (req, res) {
 
 				jsonfile.writeFile(__dirname + '/drivers.json', data, function (err) {
 					if (err) {
-						console.error(err);
+						console.error('Error - ' + err);
 						throw err;
 					}
 				});
@@ -807,7 +807,7 @@ app.delete('/api/drivers/:guid', function (req, res) {
 	catch (e) {
 		console.log('Error: DELETE/api/drivers - ' + e);
 		res.status(500);
-		res.send("Failed to delete driver");
+		res.send('Application error');
 		return;
 	}
 
@@ -838,9 +838,9 @@ app.get('/api/tyres', function (req, res) {
 		res.send(result)
 	}
 	catch (e) {
-		console.log("Failed to retrieve tyres");
+		console.log('Error: GET/api/tyres - ' + e);
 		res.status(500);
-		res.send("Failed to retrieve tyres");
+		res.send('Application error');
 	}
 });
 
@@ -859,14 +859,14 @@ app.get('/api/acserver/status', function (req, res) {
 // start acserver process
 app.post('/api/acserver', function (req, res) {
 	try {
-		console.log("OS is " + process.platform);
+		console.log('OS is ' + process.platform);
 		var acServer = undefined;
 
 		if (isRunningOnWindows) {
-			console.log("Starting Windows Server");
+			console.log('Starting Windows Server');
 			acServer = childProcess.spawn('acServer.exe', { cwd: serverPath });
 		} else {
-			console.log("Starting Linux Server");
+			console.log('Starting Linux Server');
 			acServer = childProcess.spawn('./acServer', { cwd: serverPath });
 		}
 		acServerPid = acServer.pid;
@@ -883,7 +883,7 @@ app.post('/api/acserver', function (req, res) {
 				acServerStatus = 1;
 			}
 			
-		   if (dataString.indexOf('stracker has been restarted') !== -1) {
+		    if (dataString.indexOf('stracker has been restarted') !== -1) {
 				sTrackerServerStatus = 1
 			}
 
@@ -898,7 +898,6 @@ app.post('/api/acserver', function (req, res) {
 					currentSession = session.substr(0, dataString.indexOf('\n')).trim();
 				}
 			}
-
 		});
 		acServer.stderr.on('data', function (data) {
 			console.log('stderr: ' + data);
@@ -913,7 +912,7 @@ app.post('/api/acserver', function (req, res) {
 		});
 
 		res.status(200);
-		res.send("OK");
+		res.send('OK');
 	} catch (e) {
 		console.log('Error: POST/api/acserver - ' + e);
 		res.status(500);
@@ -926,11 +925,11 @@ app.post('/api/acserver/stop', function (req, res) {
 	try {
 		if (acServerPid) {
 			if (isRunningOnWindows) {
-				console.log("Stopping Windows Server");
-				childProcess.spawn("taskkill", ["/pid", acServerPid, '/f', '/t']);
+				console.log('Stopping Windows Server');
+				childProcess.spawn('taskkill', ['/pid', acServerPid, '/f', '/t']);
 			} else {
-				console.log("Stopping Linux Server");
-				childProcess.spawn("kill", [acServerPid]);
+				console.log('Stopping Linux Server');
+				childProcess.spawn('kill', [acServerPid]);
 			}
 
 			acServerPid = undefined;
@@ -938,7 +937,7 @@ app.post('/api/acserver/stop', function (req, res) {
 		}
 
 		res.status(200);
-		res.send("OK");
+		res.send('OK');
 	} catch (e) {
 		console.log('Error: POST/api/acserver/stop - ' + e);
 		res.status(500);
@@ -983,7 +982,7 @@ app.post('/api/strackerserver', function (req, res) {
 		});
 
 		res.status(200);
-		res.send("OK");
+		res.send('OK');
 	} catch (e) {
 		console.log('Error: POST/api/strackerserver - ' + e);
 		res.status(500);
@@ -995,12 +994,12 @@ app.post('/api/strackerserver', function (req, res) {
 app.post('/api/strackerserver/stop', function (req, res) {
 	try {
 		if (sTrackerServerPid) {
-			childProcess.spawn("taskkill", ["/pid", sTrackerServerPid, '/f', '/t']);
+			childProcess.spawn('taskkill', ['/pid', sTrackerServerPid, '/f', '/t']);
 			sTrackerServerPid = undefined;
 		}
 
 		res.status(200);
-		res.send("OK");
+		res.send('OK');
 	} catch (e) {
 		console.log('Error: POST/api/strackerserver/stop - ' + e);
 		res.status(500);
