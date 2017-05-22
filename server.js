@@ -18,6 +18,9 @@ var sTrackerPath = buildSTrackerPath(settings.sTrackerPath);
 var serverPath = buildServerPath(settings.serverPath);
 var contentPath = buildContentPath(serverPath);
 
+var localTracksContent = 'frontend/content/tracks';
+var localCarsContent = 'frontend/content/cars';
+
 var isRunningOnWindows = /^win/.test(process.platform);
 
 var acServerStatus = 0;
@@ -113,6 +116,13 @@ function buildContentPath(serverPath) {
 		if(contentPath.substr(-1) === '/') {
 			contentPath = contentPath.substring(0, contentPath.length - 1);
 		}
+	}
+	return contentPath;
+}
+
+function checkLocalContentPath(contentPath) {
+	if(settings.useLocalContent === 'true'){
+		contentPath = 'frontend/content';
 	}
 	return contentPath;
 }
@@ -570,7 +580,8 @@ app.post('/api/weather', function (req, res) {
 // get tracks available on server
 app.get('/api/tracks', function (req, res) {
 	try {
-		var trackNames = fs.readdirSync('frontend/img' + '/tracks');
+		contentPath = checkLocalContentPath(contentPath);
+		var trackNames = fs.readdirSync(contentPath + '/tracks');
 		var tracks = [];
 
 		for (var trackName in trackNames) {
@@ -579,7 +590,7 @@ app.get('/api/tracks', function (req, res) {
 			};
 
 			try {
-				var configs = getDirectories('frontend/img' + '/tracks/' + trackNames[trackName] + '/ui');
+				var configs = getDirectories(contentPath + '/tracks/' + trackNames[trackName] + '/ui');
 				track.configs = configs;
 			}
 			catch (e) {
@@ -601,7 +612,8 @@ app.get('/api/tracks', function (req, res) {
 // get track
 app.get('/api/tracks/:track', function (req, res) {
 	try {
-		var trackDetails = fs.readFileSync('frontend/img' + '/tracks/' + req.params.track + '/ui/ui_track.json', 'utf-8');
+		contentPath = checkLocalContentPath(contentPath);
+		var trackDetails = fs.readFileSync(contentPath + '/tracks/' + req.params.track + '/ui/ui_track.json', 'utf-8');
 		res.status(200);
 		res.send(trackDetails);
 	} catch (e) {
@@ -614,8 +626,9 @@ app.get('/api/tracks/:track', function (req, res) {
 // get track image
 app.get('/api/tracks/:track/image', function (req, res) {
 	try {
-		res.status(200);;
-		var image = fs.readFileSync('frontend/img' + '/tracks/' + req.params.track + '/ui/preview.png');
+		contentPath = checkLocalContentPath(contentPath);
+		var image = fs.readFileSync(contentPath + '/tracks/' + req.params.track + '/ui/preview.png');
+		res.status(200);
 		res.contentType('image/jpeg');
 		res.send(image);
 	} catch (e) {
@@ -628,7 +641,8 @@ app.get('/api/tracks/:track/image', function (req, res) {
 // get track config
 app.get('/api/tracks/:track/:config', function (req, res) {
 	try {
-		var trackDetails = fs.readFileSync('frontend/img' + '/tracks/' + req.params.track + '/ui/' + req.params.config + '/ui_track.json', 'utf-8');
+		contentPath = checkLocalContentPath(contentPath);
+		var trackDetails = fs.readFileSync(contentPath + '/tracks/' + req.params.track + '/ui/' + req.params.config + '/ui_track.json', 'utf-8');
 		res.status(200);
 		res.send(trackDetails);
 	} catch (e) {
@@ -641,8 +655,9 @@ app.get('/api/tracks/:track/:config', function (req, res) {
 // get track config image
 app.get('/api/tracks/:track/:config/image', function (req, res) {
 	try {
-		res.status(200);;
-		var image = fs.readFileSync('frontend/img' + '/tracks/' + req.params.track + '/ui/' + req.params.config + '/preview.png');
+		contentPath = checkLocalContentPath(contentPath);
+		var image = fs.readFileSync(contentPath + '/tracks/' + req.params.track + '/ui/' + req.params.config + '/preview.png');
+		res.status(200);
 		res.contentType('image/jpeg');
 		res.send(image);
 	} catch (e) {
@@ -655,6 +670,7 @@ app.get('/api/tracks/:track/:config/image', function (req, res) {
 // get cars available on server
 app.get('/api/cars', function (req, res) {
 	try {
+		contentPath = checkLocalContentPath(contentPath);
 		var cars = fs.readdirSync(contentPath + '/cars');
 		res.status(200);
 		res.send(cars);
@@ -670,6 +686,7 @@ app.get('/api/cars/:car', function (req, res) {
 	try {
 		var skins = {}
 		try {
+			contentPath = checkLocalContentPath(contentPath);
 			var skins = fs.readdirSync(contentPath + '/cars/' + req.params.car + '/skins');
 		}
 		catch (e) {
