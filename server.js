@@ -18,9 +18,6 @@ var sTrackerPath = buildSTrackerPath(settings.sTrackerPath);
 var serverPath = buildServerPath(settings.serverPath);
 var contentPath = buildContentPath(serverPath);
 
-var localTracksContent = 'frontend/content/tracks';
-var localCarsContent = 'frontend/content/cars';
-
 var isRunningOnWindows = /^win/.test(process.platform);
 
 var acServerStatus = 0;
@@ -670,7 +667,6 @@ app.get('/api/tracks/:track/:config/image', function (req, res) {
 // get cars available on server
 app.get('/api/cars', function (req, res) {
 	try {
-		contentPath = checkLocalContentPath(contentPath);
 		var cars = fs.readdirSync(contentPath + '/cars');
 		res.status(200);
 		res.send(cars);
@@ -686,7 +682,6 @@ app.get('/api/cars/:car', function (req, res) {
 	try {
 		var skins = {}
 		try {
-			contentPath = checkLocalContentPath(contentPath);
 			var skins = fs.readdirSync(contentPath + '/cars/' + req.params.car + '/skins');
 		}
 		catch (e) {
