@@ -7,6 +7,11 @@ Start and stop the server, and stracker directly from the application, meaning y
 This is the installation guide for a Linux machine, to review the Windows installation guide go [here](https://github.com/jo3stevens/ACServerManager/blob/master/README.md).
 
 ## Updates
+24/05/2017
+* Update for 1.14 AC patch
+* Fixed a number of saving issues
+* Added local car & track content option
+
 27/01/2017:
 * Update to UI layout
 * Added restart feature for AC & sTracker server
@@ -56,10 +61,11 @@ To configure your manager's settings, open the 'settings.js' file. You'll see a 
 to your Assetto Corsa Server directory. You can configure your username, password & port settings for ACServerManager, also 
 if you use sTracker, point the 'sTrackerPath' variable to your installation.
 
-* serverPath: The path to your server folder containing acServer.exe
-* sTrackerPath: The path to your stracker folder container stracker.exe (If you don't run stracker just leave this as an empty string ('') to disable it
+* serverPath: The path to your Assetto Corsa server directory
+* contentPath: The path to your Assetto Corsa content directory
+* sTrackerPath: The path to your sTracker directory that contains stracker.exe (If you don't run stracker just leave this as an empty string ('') to disable it
 * username/password: Set these values if you want basic authentication on the application
-* port: The port that the application will listen on (Be sure to open up this port on firewalls)
+* port: The port that the application will listen on (Be sure to open up this port on your firewall)
 
 Note: I've currently set the Assetto Corsa Server installation to one directory up in 'server', change if necessary.
 

@@ -169,7 +169,7 @@
 											<div class="col-sm-12">
 												<div class="form-group">
 													<label>Tracks</label>
-													<select class="form-control" ng-model="selectedTrack" ng-options="track.name as track.name for track in tracks" ng-change="trackChanged()"></select>
+													<select class="form-control" ng-model="selectedTracks" ng-options="track.name as track.name for track in tracks" ng-change="trackChanged()"></select>
 												</div>
 											</div>
 										</div>
@@ -329,6 +329,39 @@
 							</fieldset>
 
 							<fieldset class="top10">
+								<legend>Wind Options</legend>
+								<div class="row">
+									<div class="col-sm-4">
+										<div class="form-group" show-errors>
+											<label>Wind Base Speed Minimum</label>
+											<input class="form-control" name="sun_angle" ng-model="server.WIND_BASE_SPEED_MIN"/>
+										</div>						
+									</div>
+
+									<div class="col-sm-4">
+										<div class="form-group" show-errors>
+											<label>Wind Base Speed Maximum</label>
+											<input class="form-control" name="sun_angle" ng-model="server.WIND_BASE_SPEED_MAX"/>
+										</div>						
+									</div>
+
+									<div class="col-sm-4">
+										<div class="form-group" show-errors>
+											<label>Wind Base Direction</label>
+											<input class="form-control" name="sun_angle" ng-model="server.WIND_BASE_DIRECTION"/>
+										</div>						
+									</div>
+
+									<div class="col-sm-4">
+										<div class="form-group" show-errors>
+											<label>Wind Variation Direction</label>
+											<input class="form-control" name="sun_angle" ng-model="server.WIND_VARIATION_DIRECTION"/>
+										</div>						
+									</div>
+								</div>
+							</fieldset>
+
+							<fieldset class="top10">
 								<legend>Other Options</legend>
 								<div class="row">
 									<div class="col-sm-4">
@@ -337,6 +370,20 @@
 											<input class="form-control" name="sun_angle" ng-model="server.SUN_ANGLE"/>
 										</div>						
 									</div>
+
+									<div class="col-sm-4">
+										<div class="form-group" show-errors>
+											<label>Time (hh)</label>
+ 											<input class="form-control" name="hours" ng-model="hours"/>
+										</div>						
+									</div>
+
+									<div class="col-sm-4">
+										<div class="form-group" show-errors>
+											<label>(mm)</label>
+											<input class="form-control" name="mins" ng-model="mins"/>
+ 										</div>	
+ 									</div>
 									
 									<div class="col-sm-4">
 										<div class="form-group" show-errors>
@@ -347,7 +394,7 @@
 									
 									<div class="col-sm-4">
 										<div class="form-group" show-errors>
-											<label>Jump Start</label>
+											<label>Start Rule</label>
 											<select class="form-control" name="start_rule" ng-model="server.START_RULE">
 												<option value="0">Car Locked</option>
 												<option value="1">Teleport to Pit</option>
@@ -386,7 +433,7 @@
 									</div>
 									
 									<div class="col-sm-2">
-										<label>Show on Lobby</label>
+										<label>Register to Lobby</label>
 										<div class="checkbox">
 											<label>
 												<toggle-switch class="switch-large" ng-model="server.REGISTER_TO_LOBBY"></toggle-switch>
