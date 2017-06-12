@@ -667,6 +667,7 @@ app.get('/api/tracks/:track/:config/image', function (req, res) {
 // get cars available on server
 app.get('/api/cars', function (req, res) {
 	try {
+		contentPath = buildContentPath(serverPath);
 		var cars = fs.readdirSync(contentPath + '/cars');
 		res.status(200);
 		res.send(cars);
