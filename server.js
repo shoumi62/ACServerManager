@@ -7,6 +7,7 @@ var childProcess = require('child_process');
 var basicAuth = require('basic-auth-connect');
 var jsonfile = require('jsonfile');
 var util = require('util');
+var uuidv4 = require('uuid/v4');
 var extend = require('node.extend');
 
 var settings = require('./settings');
@@ -1018,6 +1019,107 @@ app.post('/api/strackerserver/stop', function (req, res) {
 		res.status(500);
 		res.send('Application error');
 	}
+});
+
+// list templates
+app.get('/api/templates', function (req, res) {
+    try {
+        contentPath = checkLocalContentPath(contentPath);
+        var templateUuids = fs.readdirSync(contentPath + '/templates');
+        var templates = [];
+
+        for (var idx in templateUuids) {
+            var uuid = templateUuids[idx];
+            var templateFile = contentPath + '/templates/' + uuid + '/config.json';
+            var template = jsonfile.readFileSync(templateFile)
+            template.uuid = uuid;
+            templates.push(template);
+        }
+
+        res.status(200);
+        res.send(templates);
+    } catch (e) {
+        console.log('Error: GET/api/templates - ' + e);
+        res.status(500);
+        res.send('Application error');
+    }
+});
+
+// store current configuration to a new template
+app.post('/api/templates', function (req, res) {
+    try {
+        contentPath = checkLocalContentPath(contentPath);
+        var uuid = uuidv4();
+        var template = {
+            name: req.body.name,
+            description: req.body.description
+        }
+        if (template.name === '') {
+            throw 'Template must have a name!';
+        }
+
+        var templateDir = contentPath + '/templates/' + uuid;
+        // TODO: assert existence and generate new uuidv4?
+        fs.mkdirSync(templateDir);
+        fs.copyFileSync(serverPath + 'cfg/server_cfg.ini', templateDir + '/server_cfg.ini');
+        fs.copyFileSync(serverPath + 'cfg/entry_list.ini', templateDir + '/entry_list.ini');
+        jsonfile.writeFileSync(templateDir + '/config.json', template);
+
+        res.status(200);
+        res.send('OK');
+    } catch (e) {
+        console.log('Error: POST/api/templates - ' + e);
+        res.status(500);
+        res.send('Application error');
+    }
+});
+
+// apply templated configuration
+app.post('/api/templates/:uuid', function (req, res) {
+    try {
+        var uuid = req.params.uuid;
+        if (!uuid) {
+            throw 'UUID not provided';
+        }
+
+        contentPath = checkLocalContentPath(contentPath);
+        var templateDir = contentPath + '/templates/' + uuid;
+	    config =  multiLine.read(templateDir + '/server_cfg.ini', {encoding: 'utf8'});
+	    entryList =  multiLine.read(templateDir + '/entry_list.ini', {encoding: 'utf8'});
+        saveConfig();
+        saveEntryList();
+
+        res.status(200);
+        res.send('OK');
+    } catch (e) {
+        console.log('Error: PUT/api/templates - ' + e);
+        res.status(500);
+        res.send('Application error');
+    }
+});
+
+// delete template based on uuid
+app.delete('/api/templates/:uuid', function (req, res) {
+    try {
+        var uuid = req.params.uuid;
+        if (!uuid) {
+            throw 'UUID not provided';
+        }
+
+        contentPath = checkLocalContentPath(contentPath);
+        var templateDir = contentPath + '/templates/' + uuid;
+        fs.unlinkSync(templateDir + '/server_cfg.ini');
+        fs.unlinkSync(templateDir + '/entry_list.ini');
+        fs.unlinkSync(templateDir + '/config.json');
+        fs.rmdirSync(templateDir);
+
+        res.status(200);
+        res.send('OK');
+    } catch (e) {
+        console.log('Error: DELETE/api/templates - ' + e);
+        res.status(500);
+        res.send('Application error');
+    }
 });
 
 
