@@ -88,6 +88,97 @@ angular.module('acServerManager')
             });
 		}
 	})
+    .controller('TemplatesCtrl', function ($scope, $filter, $timeout, TemplateService) {
+        $scope.templateList = [];
+
+        TemplateService.GetTemplates(function (data) {
+            $scope.templateList = data;
+        });
+
+        $scope.loadTemplate = function(index) {
+            if (!confirm('Are you sure?')) {
+                return;
+            }
+            try {
+                var loaded = true;
+                var template = $scope.templateList[index];
+                TemplateService.LoadTemplate(template, function(result) {
+                    if (!(result[0] === 'O' && result[1] === 'K')) {
+                        loaded = false;
+                    }
+                });
+                if (loaded) {
+                    createAlert('success', 'Loaded succesfully, remember to restart server!', 'pe-7s-star');
+                } else {
+                    createAlert('warning', 'Load failed!', 'pe-7s-close-circle');
+                }
+            } catch (e) {
+                console.log('Error - ' + e);
+            }
+        }
+
+        $scope.removeTemplate = function(index) {
+            if (!confirm('Are you sure?')) {
+                return;
+            }
+            try {
+                var removed = true;
+                var template = $scope.templateList[index];
+                TemplateService.RemoveTemplate(template, function(result) {
+                    if (!(result[0] === 'O' && result[1] === 'K')) {
+                        removed = false;
+                    } else {
+                        $scope.templateList.splice(index, 1)
+                    }
+                });
+                if (removed) {
+                    createAlert('success', 'Removed succesfully', 'pe-7s-star');
+                } else {
+                    createAlert('warning', 'Remove failed', 'pe-7s-close-circle');
+                }
+            } catch (e) {
+                console.log('Error - ' + e);
+            }
+        }
+
+        $scope.saveCurrent = function() {
+            $scope.$broadcast('show-errors-check-validity');
+
+            if ($scope.form.$invalid) {
+                createAlert('warning', 'There are errors on the form', 'pe-7s-note');
+                return;
+            }
+
+            try {
+                var saved = true;
+                var template = angular.copy($scope.newTemplate);
+                TemplateService.SaveCurrent(template, function(result) {
+                    if (!(result[0] === 'O' && result[1] === 'K')) {
+                        saved = false;
+                    } else {
+                        $scope.templateList.push(template);
+                    }
+                });
+                if (saved) {
+                    createAlert('success', 'Saved succesfully', 'pe-7s-star');
+                } else {
+                    createAlert('warning', 'Save failed', 'pe-7s-close-circle');
+                }
+            } catch (e) {
+                console.log('Error - ' + e);
+            }
+        }
+
+        function createAlert(type, msg, icon) {
+            $.notify({
+                icon: icon,
+                message: msg
+            },{
+                type: type,
+                timer: 3000
+            });
+        }
+    })
 	.controller('ServerCtrl', function ($scope, $filter, $timeout, CarService, TrackService, ServerService, BookService, PracticeService, QualifyService, RaceService, TyreService, WeatherService) {
 		$scope.sessions = [];
 		$scope.alerts = [];

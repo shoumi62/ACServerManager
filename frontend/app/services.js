@@ -275,4 +275,32 @@ angular.module('acServerManager.services', ['ngResource']).
                 });
             }
         };
+    }).
+    factory('TemplateService', function($resource) {
+        return {
+            GetTemplates: function(callback) {
+                var resource = $resource('/api/templates');
+                var result = resource.query(function() {
+                    callback(result);
+                });
+            },
+            LoadTemplate: function(template, callback) {
+                var resource = $resource('/api/templates/:uuid');
+                var result = resource.save({uuid: template.uuid}, template, function() {
+                    callback(result);
+                });
+            },
+            RemoveTemplate: function(template, callback) {
+                var resource = $resource('/api/templates/:uuid');
+                var result = resource.delete({uuid: template.uuid}, function() {
+                    callback(result);
+                });
+            },
+            SaveCurrent: function(template, callback) {
+                var resource = $resource('/api/templates');
+                var result = resource.save(template, function() {
+                    callback(result);
+                });
+            }
+        };
     });
