@@ -7,6 +7,10 @@ Start and stop the server, and stracker directly from the application, meaning y
 This is the installation guide for a Linux machine, to review the Windows installation guide go [here](https://github.com/jo3stevens/ACServerManager/blob/master/README.md).
 
 ## Updates
+21/12/2017
+* Update for 1.16 AC patch
+* Added local car / skins generation script for v1.16 AC original + DLC content
+
 24/05/2017
 * Update for 1.14 AC patch
 * Fixed a number of saving issues
@@ -66,6 +70,9 @@ if you use sTracker, point the 'sTrackerPath' variable to your installation.
 * sTrackerPath: The path to your sTracker directory that contains stracker.exe (If you don't run stracker just leave this as an empty string ('') to disable it
 * username/password: Set these values if you want basic authentication on the application
 * port: The port that the application will listen on (Be sure to open up this port on your firewall)
+
+## Generating local content
+In order to get all cars and possible skins visible in the ACServerManager web UI, just run generate-frontend-content.sh -script in the root directory. These are not included since git repositories do not support empty directories.
 
 Note: I've currently set the Assetto Corsa Server installation to one directory up in 'server', change if necessary.
 
