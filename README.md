@@ -7,6 +7,9 @@ Start and stop the server, and stracker directly from the application, meaning y
 This is the installation guide for a Windows machine, to review the Linux installation guide go [here](https://github.com/jo3stevens/ACServerManager/blob/master/README_Linux.md).
 
 ## Updates
+21/12/2017
+* Update for 1.16 AC patch
+
 24/05/2017
 * Update for 1.14 AC patch
 * Fixed a number of saving issues
