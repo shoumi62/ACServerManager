@@ -5,5 +5,6 @@ module.exports = {
   sTrackerPath: '',
   username: '',
   password: '',
+  url: 'http://localhost',
   port: 42555
 };

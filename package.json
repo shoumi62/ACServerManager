@@ -5,16 +5,21 @@
   "main": "server.js",
   "author": "Joe Stevens",
   "dependencies": {
+    "basic-auth-connect": "^1.0.0",
+    "body-parser": "~1.16.0",
+    "child_process": "^1.0.2",
     "express": "^4.14.1",
     "fs": "latest",
     "ini": "~1.3.4",
-    "multi-ini": "~1.0.0",
-    "body-parser": "~1.16.0",
-    "child_process": "^1.0.2",
-    "basic-auth-connect": "^1.0.0",
     "jsonfile": "^2.4.0",
+    "lodash": "4.17.4",
+    "mkdirp": "0.5.1",
+    "multer": "1.1.0",
+    "multi-ini": "~1.0.0",
+    "ng-file-upload": "^12.2.13",
+    "node.extend": "^1.1.6",
+    "rimraf": "2.6.2",
     "util": "^0.10.3",
-    "uuid": "^3.1.0",
-    "node.extend": "^1.1.6"
+    "uuid": "^3.1.0"
   }
 }

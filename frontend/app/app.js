@@ -2,6 +2,8 @@
 
 angular
     .module('acServerManager', ['acServerManager.services', 'ui.bootstrap', 'ui.bootstrap.showErrors', 'toggle-switch'])
+    // Use lodash in controllers
+    .constant('_', window._)
     .directive('stringToNumber', function() {
         return {
             require: 'ngModel',

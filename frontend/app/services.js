@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('acServerManager.services', ['ngResource']).
+angular.module('acServerManager.services', ['ngResource', 'ngFileUpload']).
     factory('CarService', function($resource) {
         return {
             GetCars: function(callback) {
@@ -12,6 +12,12 @@ angular.module('acServerManager.services', ['ngResource']).
 			GetSkins: function(car, callback) {
                 var resource = $resource('/api/cars/:car');
                 var result = resource.get({car: car}, function() {
+                    callback(result);
+                });
+            },
+            RemoveCar: function(car, callback) {
+                var resource = $resource('/api/cars/:car');
+                var result = resource.delete({car: car}, function() {
                     callback(result);
                 });
             }
@@ -41,7 +47,13 @@ angular.module('acServerManager.services', ['ngResource']).
 						callback(null);
 					});
 				}
-            }
+            },
+            RemoveTrack: function(track, callback) {
+                var resource = $resource('/api/tracks/:track');
+                var result = resource.delete({track: track}, function() {
+                    callback(result);
+                });
+            },
         };
     }).
 	factory('ServerService', function($resource) {

@@ -9,6 +9,10 @@ var jsonfile = require('jsonfile');
 var util = require('util');
 var uuidv4 = require('uuid/v4');
 var extend = require('node.extend');
+var multer = require('multer');
+var mkdirp = require('mkdirp');
+var rimraf = require('rimraf');
+var _ = require('lodash');
 
 var settings = require('./settings');
 
@@ -18,6 +22,19 @@ var password = settings.password;
 var sTrackerPath = buildSTrackerPath(settings.sTrackerPath);
 var serverPath = buildServerPath(settings.serverPath);
 var contentPath = buildContentPath(serverPath);
+
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        // Each uploaded track/car users unique uuidv4 set for request
+        var uploadDir = './uploads/' + req.uuid;
+        req.uploadDir = uploadDir;
+        mkdirp.sync(uploadDir);
+        cb(null, uploadDir);
+    }
+});
+var upload = multer({
+    storage: storage
+});
 
 var isRunningOnWindows = /^win/.test(process.platform);
 
@@ -62,6 +79,14 @@ function saveEntryList() {
 	} catch (e) {
 		console.log('Error - ' + e);
 	}
+}
+
+function saveModTyres() {
+    try {
+        fs.writeFileSync(serverPath + 'manager/mod_tyres.ini', ini.stringify(modTyres).replace(/\\/gi, ''));
+    } catch (e) {
+        console.log('Error - ' + e);
+    }
 }
 
 function getDirectories(srcpath) {
@@ -125,10 +150,27 @@ function checkLocalContentPath(contentPath) {
 	return contentPath;
 }
 
+function removeSlashes(str) {
+    var newStr = str;
+    while (newStr.search('/') != -1) {
+        newStr = newStr.replace('/', '');
+    }
+    return newStr;
+}
+
 var app = express();
 if (username !== '' && password !== '') {
 	app.use(basicAuth(username, password));
 }
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", settings.url + ":" + settings.port);
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
+app.use(function (req, res, next) {
+    req.uuid = uuidv4();
+    next();
+});
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/frontend'));
 
@@ -621,6 +663,23 @@ app.get('/api/tracks/:track', function (req, res) {
 	}
 });
 
+// remove existing track
+app.delete('/api/tracks/:track', function (req, res) {
+    try {
+        var track = removeSlashes(req.params.track);
+        var serverTrackPath = serverPath + 'content/tracks/' + track;
+        var contentTrackPath = checkLocalContentPath(contentPath) + '/tracks/' + track;
+        rimraf.sync(serverTrackPath);
+        rimraf.sync(contentTrackPath);
+        res.status(200);
+        res.send('OK');
+    } catch (e) {
+        console.log('Error: DELETE/api/track/:track - ' + e);
+        res.status(500);
+        res.send('Application error');
+    }
+});
+
 // get track image
 app.get('/api/tracks/:track/image', function (req, res) {
 	try {
@@ -665,6 +724,83 @@ app.get('/api/tracks/:track/:config/image', function (req, res) {
 	}
 });
 
+function copyTrack(serverTrackPath, contentTrackPath, surfaces, drs_zones, preview, ui_track) {
+    mkdirp.sync(serverTrackPath);
+    mkdirp.sync(contentTrackPath);
+    fs.copyFileSync(surfaces.path, serverTrackPath + 'surfaces.ini');
+    if (drs_zones !== null && drs_zones !== undefined) {
+        fs.copyFileSync(drs_zones.path, serverTrackPath + 'drs_zones.ini');
+    }
+    fs.copyFileSync(preview.path, contentTrackPath + 'preview.png');
+    fs.copyFileSync(ui_track.path, contentTrackPath + 'ui_track.json');
+}
+
+function addSingleLayoutTrack(track) {
+    var serverTrackPath = serverPath + 'content/tracks/' + track.name + '/data/';
+    var contentTrackPath = checkLocalContentPath(contentPath) + '/tracks/' + track.name + '/ui/';
+    copyTrack(serverTrackPath,
+              contentTrackPath,
+              track.layouts[0].surfaces,
+              track.layouts[0].drs_zones,
+              track.layouts[0].preview,
+              track.layouts[0].ui_track);
+}
+
+function addMultiLayoutTrack(track) {
+    var serverTrackPath = serverPath + 'content/tracks/' + track.name + '/';
+    var contentTrackPath = checkLocalContentPath(contentPath) + '/tracks/' + track.name + '/ui/';
+
+    _.forEach(track.layouts, function(layout) {
+        var serverLayoutPath = serverTrackPath + layout.name + '/data/';
+        var contentLayoutPath = contentTrackPath + layout.name + '/';
+        copyTrack(serverLayoutPath,
+                  contentLayoutPath,
+                  layout.surfaces,
+                  layout.drs_zones,
+                  layout.preview,
+                  layout.ui_track);
+    });
+}
+
+// store uploaded file for track
+app.post('/api/tracks', upload.any(), function (req, res) {
+    try {
+        var track = {
+            name: removeSlashes(req.body.track.name),
+            layouts: _.map(req.body.track.layouts, function(layout) {
+                if (layout.name === 'null') {
+                    layout.name = null;
+                } else {
+                    layout.name = removeSlashes(layout.name);
+                }
+                return layout;
+            })
+        };
+        _.forEach(req.files, function(file) {
+            var parts = _.split(file.fieldname, '][');
+            var idx = _.parseInt(parts[1]);
+            var key = parts[2].substr(0, parts[2].length - 1);
+            track.layouts[idx][key] = file;
+        });
+
+        if (track.layouts.length > 1) {
+            addMultiLayoutTrack(track);
+        } else if (track.layouts.length === 1) {
+            addSingleLayoutTrack(track);
+        } else {
+            throw 'Invalid layouts for track';
+        }
+
+        rimraf.sync('./uploads/' + req.uuid);
+        res.status(200);
+        res.send('OK');
+    } catch (e) {
+        console.log('Error: POST/api/tracks/new - ' + e);
+        res.status(500);
+        res.send('Application error');
+    }
+});
+
 // get cars available on server
 app.get('/api/cars', function (req, res) {
 	try {
@@ -677,6 +813,72 @@ app.get('/api/cars', function (req, res) {
 		res.status(500);
 		res.send('Application error');
 	}
+});
+
+function mkdirCarSkins(car) {
+    var skinPath = checkLocalContentPath(contentPath) + '/cars/' + car.name + '/skins/';
+    _.forEach(car.skins, function(skin) {
+        mkdirp.sync(skinPath + skin);
+    });
+}
+
+function modifyCarModTyres(car) {
+    if (!modTyres) {
+        modTyres = {};
+    }
+    var carTyres = ini.parse(car.mod_tyres);
+    if (carTyres[car.name] !== null && carTyres[car.name] !== undefined) {
+        modTyres[car.name] = carTyres[car.name];
+        saveModTyres();
+    }
+}
+
+function copyCarFiles(serverCarPath, files) {
+    mkdirp.sync(serverCarPath);
+    _.forEach(files, function(file) {
+        fs.copyFileSync(file.path, serverCarPath + file.originalname);
+    });
+}
+
+// add new car
+app.post('/api/cars', upload.any(), function (req, res) {
+    try {
+        var car = {
+            name: removeSlashes(req.body.car.name),
+            mod_tyres: req.body.car.mod_tyres,
+            skins: _.map(req.body.car.skins, removeSlashes)
+        };
+        var files = _.groupBy(req.files, function(value) {
+            return value.fieldname.split('][')[0].substr(4);
+        });
+        var singleDataFile = false;
+        if (files.data.length === 0) {
+            throw 'No data files with car';
+        } else if (files.data.length === 1) {
+            if (files.data[0].originalname !== 'data.acd') {
+                throw 'No data.acd file with car';
+            }
+            singleDataFile = true;
+        }
+        car.data = files.data;
+
+        mkdirCarSkins(car);
+        modifyCarModTyres(car);
+        var serverCarPath = serverPath + 'content/cars/' + car.name + '/';
+        if (singleDataFile) {
+            copyCarFiles(serverCarPath, car.data);
+        } else {
+            copyCarFiles(serverCarPath + 'data/', car.data);
+        }
+
+        rimraf.sync('./uploads/' + req.uuid);
+        res.status(200);
+        res.send('OK');
+    } catch (e) {
+        console.log('Error: POST/api/cars - ' + e);
+        res.status(500);
+        res.send('Application error');
+    }
 });
 
 // get car skin
@@ -697,6 +899,28 @@ app.get('/api/cars/:car', function (req, res) {
 		res.status(500);
 		res.send('Application error');
 	}
+});
+
+// remove existing car
+app.delete('/api/cars/:car', function (req, res) {
+    try {
+        var car = removeSlashes(req.params.car);
+        var serverCarPath = serverPath + 'content/cars/' + car;
+        var contentCarPath = checkLocalContentPath(contentPath) + '/cars/' + car;
+        if (modTyres) {
+            modTyres = _.omit(modTyres, car);
+            saveModTyres();
+        }
+        rimraf.sync(serverCarPath);
+        rimraf.sync(contentCarPath);
+        res.status(200);
+        res.send('OK');
+    }
+    catch (e) {
+		console.log('Error: DELETE/api/cars/:car - ' + e);
+		res.status(500);
+		res.send('Application error');
+    }
 });
 
 // get entry list
@@ -1108,10 +1332,7 @@ app.delete('/api/templates/:uuid', function (req, res) {
 
         contentPath = checkLocalContentPath(contentPath);
         var templateDir = contentPath + '/templates/' + uuid;
-        fs.unlinkSync(templateDir + '/server_cfg.ini');
-        fs.unlinkSync(templateDir + '/entry_list.ini');
-        fs.unlinkSync(templateDir + '/config.json');
-        fs.rmdirSync(templateDir);
+        rimraf.sync(templateDir);
 
         res.status(200);
         res.send('OK');

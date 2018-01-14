@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('acServerManager')
-	.controller('StatusCtrl', function($scope, $timeout, ProcessService, ServerService) {
+    .controller('StatusCtrl', function($scope, $timeout, ProcessService, ServerService) {
 		$scope.alerts = [];
 		
 		(function getACServerStatus() {
@@ -122,20 +122,15 @@ angular.module('acServerManager')
                 return;
             }
             try {
-                var removed = true;
                 var template = $scope.templateList[index];
                 TemplateService.RemoveTemplate(template, function(result) {
                     if (!(result[0] === 'O' && result[1] === 'K')) {
-                        removed = false;
+                        createAlert('warning', 'Remove failed', 'pe-7s-close-circle');
                     } else {
                         $scope.templateList.splice(index, 1)
+                        createAlert('success', 'Removed succesfully', 'pe-7s-star');
                     }
                 });
-                if (removed) {
-                    createAlert('success', 'Removed succesfully', 'pe-7s-star');
-                } else {
-                    createAlert('warning', 'Remove failed', 'pe-7s-close-circle');
-                }
             } catch (e) {
                 console.log('Error - ' + e);
             }
@@ -720,6 +715,351 @@ angular.module('acServerManager')
             });
 		}
 	})
+    .controller('CarCtrl', function($scope, Upload, $timeout, $q, CarService) {
+        $scope.alerts = [];
+        $scope.files = [];
+        $scope.userDropped = false;
+        $scope.newCar = {
+            name: '',
+            data: [],
+            mod_tyres: '',
+            skins: [],
+            $valid: false
+        };
+
+        CarService.GetCars(function (data) {
+            $scope.cars = data;
+        });
+
+        $scope.$watch('files', function() {
+            $scope.validateCar($scope.files);
+        });
+
+        $scope.removeCar = function(index) {
+            if (!confirm('Are you sure?')) {
+                return;
+            }
+            try {
+                var car = $scope.cars[index];
+                CarService.RemoveCar(car, function(result) {
+                    if (!(result[0] === 'O' && result[1] === 'K')) {
+                        createAlert('warning', 'Remove failed', 'pe-7s-close-circle');
+                    } else {
+                        $scope.cars.splice(index, 1);
+                        createAlert('success', 'Removed succesfully', 'pe-7s-star');
+                    }
+                });
+            } catch(e) {
+                console.log('Error - ' + e);
+            }
+        }
+
+        $scope.resetNewCar = function() {
+            $scope.newCar.$valid = false;
+            $scope.newCar.name = '';
+            $scope.newCar.data = [];
+            $scope.newCar.mod_tyres = '';
+            $scope.newCar.skins = [];
+        }
+
+        $scope.submitCar = function() {
+            if ($scope.newCar.$valid !== true) {
+                createAlert('warning', 'Car is not valid! Please try again!', 'pe-7s-close-circle');
+                return;
+            }
+
+            var car = _.pick($scope.newCar, ['name', 'data', 'mod_tyres', 'skins']);
+            $q.when($scope.uploadCar(car)).then(function(results) {
+                createAlert('success', 'Car succesfully added!', 'pe-7s-star');
+                CarService.GetCars(function (data) {
+                    $scope.cars = data;
+                });
+            }, function(reason) {
+                createAlert('alert', 'Failed to add car - ' + reason, 'pe-7s-close-circle');
+            });
+            $scope.files = [];
+            $scope.userDropped = false;
+            $scope.resetNewCar();
+        }
+
+        $scope.uploadCar = function(car, progressCb) {
+            var uploadPromise = Upload.upload({
+                url: '/api/cars',
+                data: { car: car }
+            });
+
+            return uploadPromise.then(function(response) {
+                return $timeout(function() {
+                    return { success: true, car: car, result: response.data };
+                });
+            }, function(response) {
+                if (response.status > 0) {
+                    var errorMsg = response.status + ': ' + response.data;
+                    return { success: false, car: car, result: errorMsg };
+                }
+            }, progressCb);
+        }
+
+        $scope.validateCar = function(files) {
+            if (files.length === 0) {
+                return
+            }
+            $scope.resetNewCar();
+
+            $scope.userDropped = true;
+
+            var directories = _.filter(files, function(file) {
+                return file.type === 'directory';
+            });
+            // Car name
+            $scope.newCar.name = directories[0].path.split('/')[0];
+            $scope.newCar.mod_tyres += '[' + $scope.newCar.name + ']\n';
+            $scope.newCar.mod_tyres += 'S=Slick Soft\nM=Slick Medium\nH=Slick Hard';
+            // Car skins
+            $scope.newCar.skins = _.map(_.filter(directories, function(dir) {
+                var parts = dir.path.split('/');
+                return parts.length === 3 && parts[1] === 'skins';
+            }), function(skinDir) {
+                return skinDir.path.split('/')[2];
+            });
+            if ($scope.newCar.skins.length === 0) {
+                createAlert('warning',
+                            'Dropped car directory has no skins!',
+                            'pe-7s-close-circle');
+                return
+            }
+            // Car data.acd
+            var candidates = _.filter(files, function(file) {
+                return file.path === $scope.newCar.name + '/data.acd';
+            });
+            if (candidates.length === 1) {
+                $scope.newCar.data = [candidates[0]];
+            } else {
+                candidates = _.filter(directories, function(dir) {
+                    return dir.path === $scope.newCar.name + '/data';
+                });
+                if (candidates.length !== 1) {
+                    createAlert('warning',
+                                'Dropped car directory has neither data.acd nor data/-directory!',
+                                'pe-7s-close-circle');
+                    return
+                }
+                $scope.newCar.data = _.filter(files, function(file) {
+                    return file.type !== 'directory' && file.path.startsWith($scope.newCar.name + '/data');
+                });
+            }
+            $scope.newCar.$valid = true;
+        }
+
+        function createAlert(type, msg, icon) {
+            $.notify({
+                icon: icon,
+                message: msg
+            },{
+                type: type,
+                timer: 3000
+            });
+        }
+    })
+    .controller('TrackCtrl', function($scope, Upload, $timeout, $q, TrackService) {
+        $scope.alerts = [];
+        $scope.files = [];
+        $scope.trackItems = [
+            { name: 'surfaces', filename: 'surfaces.ini', subdir: 'data', required: true, max_size: 1000000 },
+            { name: 'drs_zones', filename: 'drs_zones.ini', subdir: 'data', required: false, max_size: 1000000 },
+            { name: 'preview', filename: 'preview.png', subdir: 'ui', required: true, max_size: 5000000 },
+            { name: 'ui_track', filename: 'ui_track.json', subdir: 'ui', required: true, max_size: 1000000 }
+        ];
+        $scope.newTrack = {
+            name: '',
+            layouts: [],
+            errors: [],
+            $valid: false
+        };
+        $scope.userDropped = false;
+
+        TrackService.GetTracks(function (data) {
+            $scope.tracks = data;
+        });
+
+        $scope.$watch('files', function() {
+            $scope.validateTrack($scope.files);
+        });
+
+        $scope.removeTrack = function(index) {
+            if (!confirm('Are you sure?')) {
+                return;
+            }
+            try {
+                var track = $scope.tracks[index];
+                TrackService.RemoveTrack(track.name, function(result) {
+                    if (!(result[0] === 'O' && result[1] === 'K')) {
+                        createAlert('warning', 'Remove failed', 'pe-7s-close-circle');
+                    } else {
+                        $scope.tracks.splice(index, 1);
+                        createAlert('success', 'Removed succesfully', 'pe-7s-star');
+                    }
+                });
+            } catch(e) {
+                console.log('Error - ' + e);
+            }
+        }
+
+        $scope.resetNewTrack = function() {
+            $scope.newTrack.name = '';
+            $scope.newTrack.layouts = [];
+            $scope.newTrack.errors = [];
+            $scope.newTrack.$valid = false;
+        }
+
+        $scope.submitTrack = function() {
+            if ($scope.newTrack.$valid !== true) {
+                createAlert('warning', 'Track is not valid! Please try again!', 'pe-7s-close-circle');
+                return;
+            }
+
+            var track = _.pick($scope.newTrack, ['name', 'layouts']);
+            $q.when($scope.uploadTrack(track)).then(function(results) {
+                createAlert('success', 'Track succesfully added!', 'pe-7s-star');
+                TrackService.GetTracks(function (data) {
+                    $scope.tracks = data;
+                });
+            }, function(reason) {
+                createAlert('warning', 'Failed to add track - ' + reason, 'pe-7s-close-circle');
+            });
+            $scope.files = []
+            $scope.userDropped = false;
+            $scope.resetNewTrack();
+        }
+
+        $scope.uploadTrack = function(track, progressCb) {
+            var uploadPromise = Upload.upload({
+                url: '/api/tracks',
+                data: { track: track }
+            });
+
+            return uploadPromise.then(function(response) {
+                 return $timeout(function() {
+                    return { success: true, track: track, result: response.data };
+                });
+            }, function(response) {
+                if (response.status > 0) {
+                    var errorMsg = response.status + ': ' + response.data;
+                    return { success: false, track: track, result: errorMsg };
+                }
+            }, progressCb);
+        }
+
+        function validateLayoutFile(files, subdir, item, errorCb) {
+            var candidates = _.filter(files, function(file) {
+                return file.path === subdir + item.filename;
+            });
+            if (candidates.length < 1) {
+                if (item.required) {
+                    $scope.newTrack.$valid = false;
+                }
+                errorCb(item.name, 'found');
+            } else if (candidates > 1) {
+                $scope.newTrack.$valid = false;
+                errorCb(item.name, 'multiple');
+            } else {
+                if (candidates[0].size > item.max_size) {
+                    $scope.newTrack.$valid = false;
+                    errorCb(item.name, 'max_size');
+                } else {
+                    return candidates[0];
+                }
+            }
+            return null;
+        }
+
+        function addLayoutError(idx, key, errorKey) {
+            if ($scope.newTrack.errors.length <= idx) {
+                $scope.newTrack.errors[idx] = {};
+            }
+            if (!_.has($scope.newTrack.errors[idx], key)) {
+                $scope.newTrack.errors[idx][key] = {};
+            }
+            $scope.newTrack.errors[idx][key][errorKey] = true;
+        }
+
+        $scope.validateTrack = function(files) {
+            if (files.length === 0) {
+                return;
+            }
+            $scope.resetNewTrack();
+
+            $scope.userDropped = true;
+            $scope.newTrack.$valid = true;
+
+            var directories = _.filter(files, function(file) {
+                return file.type === 'directory';
+            });
+            // Track name
+            $scope.newTrack.name = directories[0].path.split('/')[0];
+            // Track layouts
+            var hasMultipleLayouts = _.indexOf(
+                _.map(directories, 'path'), $scope.newTrack.name + '/data') === -1;
+            if (hasMultipleLayouts) {
+                var layoutNames = _.map(_.filter(directories, isLayoutDir), function(dir) {
+                    return dir.path.split('/')[1];
+                });
+                var idx = 0;
+                _.forEach(layoutNames, function(layoutName) {
+                    var layout = { name: layoutName };
+                    var errorCb = _.partial(addLayoutError, idx);
+                    _.forEach($scope.trackItems, function(item) {
+                        // Multilayout directory structure:
+                        // TRACK/LAYOUT/data/
+                        // TRACK/ui/LAYOUT/
+                        var subdir = $scope.newTrack.name + '/' +
+                            (item.subdir == 'ui' ? 'ui/' + layoutName : layoutName + '/data') + '/';
+                        var candidate = validateLayoutFile(files, subdir, item, errorCb);
+                        if (candidate !== null && candidate !== undefined) {
+                            layout[item.name] = candidate;
+                        }
+                    });
+                    $scope.newTrack.layouts[idx] = layout;
+                    idx++;
+                });
+            } else {
+                var layout = { name: null };
+                _.forEach($scope.trackItems, function(item) {
+                    var subdir = $scope.newTrack.name + '/' + item.subdir + '/';
+                    var errorCb = _.partial(addLayoutError, 0);
+                    var candidate = validateLayoutFile(files, subdir, item, errorCb);
+                    if (candidate !== null && candidate !== undefined) {
+                        layout[item.name] = candidate;
+                    }
+                });
+                $scope.newTrack.layouts[0] = layout;
+            }
+        }
+
+        function isLayoutDir(dir) {
+            var reservedNames = ['ui', 'ai', 'skins', 'data'];
+            var parts = dir.path.split('/');
+            if (parts.length !== 2) {
+                return false;
+            } else if (parts[0] !== $scope.newTrack.name) {
+                return false;
+            } else if (_.indexOf(reservedNames, parts[1]) !== -1) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+        function createAlert(type, msg, icon) {
+            $.notify({
+                icon: icon,
+                message: msg
+            },{
+                type: type,
+                timer: 3000
+            });
+        }
+    })
 	.controller('RulesCtrl', function($scope, $timeout, ServerService, DynamicTrackService) {
 		$scope.alerts = [];
 		
