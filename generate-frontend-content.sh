@@ -1,3 +1,9 @@
+echo "\n"
+echo "****************************************************"
+echo "*       ACManager - Generating Car Content!        *"
+echo "****************************************************"
+echo "\n"
+
 #!/bin/bash
 mkdir -p frontend/content/cars/
 mkdir -p frontend/content/cars/lotus_exos_125_s1
@@ -2380,3 +2386,8 @@ mkdir -p frontend/content/cars/ks_porsche_911_carrera_rsr/skins/19_kunosracing_5
 mkdir -p frontend/content/cars/ks_porsche_911_carrera_rsr/skins/12_carrera_red
 mkdir -p frontend/content/cars/ks_porsche_911_carrera_rsr/skins/02_kremer
 mkdir -p frontend/content/cars/ks_porsche_911_carrera_rsr/skins/18_kunosracing_57
+
+echo "****************************************************"
+echo "*   ACManager - Finished Generating Car Content!   *"
+echo "****************************************************"
+echo "\n"

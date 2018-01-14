@@ -29,7 +29,7 @@
     
     <body ng-app="acServerManager" ng-controller="TemplatesCtrl" ng-cloak>
         <div class="wrapper">
-            <div class="sidebar" data-color="red" data-image="img/sidebar-5.jpg">
+            <div class="sidebar" data-color="red" data-image="img/sidebar-1.jpg">
                 <div class="sidebar-wrapper">
                     <div class="logo">
                         <a href="#" class="simple-text">
@@ -120,30 +120,30 @@
                         </div>
                         <form ng-submit="saveCurrent()" name="form" data-toggle="validator">
                             <fieldset>
-                                <legend>Save current configuration</legend>
+                                <legend>Save Current Configuration</legend>
                                 <div class="row">
                                     <div class="col-sm-4">
                                         <div class="form-group" show-errors>
-                                            <label>Template name</label>
+                                            <label>Template Name</label>
                                             <input class="form-control" name="name" ng-model="newTemplate.name" required/>
                                         </div>
                                     </div>
                                     <div class="col-sm-8">
                                         <div class="form-group">
-                                            <label>Template description</label>
+                                            <label>Template Description</label>
                                             <input class="form-control" ng-model="newTemplate.description"/>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row bottom30">
                                     <div class="col-sm-6">
-                                        <button type="submit" class="btn btn-danger btn-sm">Save template</button>
+                                        <button type="submit" class="btn btn-danger btn-sm">Save Template</button>
                                     </div>
                                 </div>
                             </fieldset>
                         </form>
                         <div ng-show="templateList.length">
-                            <legend>Load saved template</legend>
+                            <legend>Load Saved Template</legend>
                             <div class="row">
                                 <div class="col-sm-12">
                                     <div class="table-responsive">
@@ -165,7 +165,7 @@
                                                     <td>
                                                         <button type="button" class="btn btn-success btn-sm"
                                                                               ng-click="loadTemplate($index)">
-                                                            Load template
+                                                            Load Template
                                                         </button>
                                                     </td>
                                                     <td style="text-align:center;">

@@ -7,8 +7,14 @@ Start and stop the server, and stracker directly from the application, meaning y
 This is the installation guide for a Windows machine, to review the Linux installation guide go [here](https://github.com/jo3stevens/ACServerManager/blob/master/README_Linux.md).
 
 ## Updates
+25/12/2017
+* Add support for uploading tracks (both single and multi-layout) and cars
+* Add support for removing existing tracks and cars
+* Bumping version of ACManager to 1.0.0!
+
 21/12/2017
 * Update for 1.16 AC patch
+* Added local car / skins generation script for v1.16 AC original + DLC content
 
 24/05/2017
 * Update for 1.14 AC patch
@@ -27,7 +33,7 @@ This is the installation guide for a Windows machine, to review the Linux instal
 22/08/2015:
 * Finished adding all the new settings from 1.2 including tyres and weather
 
-## Prep
+## Preparation
 NOTE: If you've been using the new windows server manager that came with 1.2 then you may not need this step as when you package the server files it does the same thing.
 
 The application needs some additional files added to the server/content/tracks and server/content/cars folders to be able to choose track configurations and car skins.

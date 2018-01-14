@@ -1,6 +1,6 @@
 {
   "name": "acsm",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "Assetto Corsa Server Manager",
   "main": "server.js",
   "author": "Joe Stevens",
