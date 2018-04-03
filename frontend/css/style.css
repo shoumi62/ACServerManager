@@ -87,6 +87,10 @@ body { padding-top: 0px;}
     text-align: center;
 }
 
+td.toggle-switch label {
+    font-weight: normal;
+}
+
 .checkbox, .checkbox label {
 	padding-left: 0px; !important
 }
