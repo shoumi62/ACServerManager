@@ -43,6 +43,7 @@ var sTrackerServerStatus = 0;
 var acServerPid;
 var sTrackerServerPid;
 var acServerLogName;
+var acServerLog = [];
 
 var currentSession;
 var modTyres;
@@ -114,6 +115,10 @@ function writeLogFile(filename, message) {
 	} catch (e) {
 		console.log('Error - ' + e);
 	}	
+}
+
+function updateServerLog(message) {
+    acServerLog = _.takeRight(_.concat(acServerLog, message), 2000);
 }
 
 function buildSTrackerPath(sTrackerPath) {
@@ -202,7 +207,10 @@ app.get('/api/server', function (req, res) {
 app.get('/api/server/status', function (req, res) {
 	try {
 		res.status(200);
-		res.send({ session: currentSession });
+		res.send({
+            session: currentSession,
+            log: _.join(acServerLog, '')
+        });
 	} catch (e) {
 		console.log('Error: GET/api/server/status - ' + e);
 		res.status(500);
@@ -1086,7 +1094,7 @@ app.get('/api/tyres', function (req, res) {
 app.get('/api/acserver/status', function (req, res) {
 	try {
 		res.status(200);
-		res.send({ status: acServerStatus });
+        res.send({ status: acServerStatus });
 	} catch (e) {
 		console.log('Error: GET/api/acserver/status - ' + e);
 		res.status(500);
@@ -1128,7 +1136,9 @@ app.post('/api/acserver', function (req, res) {
 			if (dataString.indexOf('PAGE: /ENTRY') === -1) {
 				//Log to console and file
 				console.log(dataString);
-				writeLogFile('server_' + acServerLogName, getDateTimeString() + ': ' + data);
+                var logEntry = getDateTimeString() + ': ' + data;
+				writeLogFile('server_' + acServerLogName, logEntry);
+                updateServerLog(logEntry);
 
 				//Set current session
 				if (dataString.indexOf('session name') !== -1) {
@@ -1139,13 +1149,17 @@ app.post('/api/acserver', function (req, res) {
 		});
 		acServer.stderr.on('data', function (data) {
 			console.log('stderr: ' + data);
-			writeLogFile('error_' + acServerLogName, getDateTimeString() + ': ' + data);
+            var logEntry = getDateTimeString() + ': ' + data;
+			writeLogFile('error_' + acServerLogName, logEntry);
+            updateServerLog(logEntry);
 		});
 		acServer.on('close', function (code) {
 			console.log('closing code: ' + code);
+            updateServerLog('Server closed with code: ' + code + '\n');
 		});
 		acServer.on('exit', function (code) {
 			console.log('exit code: ' + code);
+            updateServerLog('Server exited with code: ' + code + '\n');
 			acServerStatus = 0;
 		});
 
