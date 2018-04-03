@@ -570,7 +570,8 @@ angular.module('acServerManager')
 			SKIN: '',
 			GUID: '',
 			SPECTATOR_MODE: '',
-			BALLAST: 0
+			BALLAST: 0,
+            RESTRICTOR: 0
 		};
 		
 		$scope.$watchCollection('newEntry', function (newVal, oldVal) {
@@ -637,7 +638,8 @@ angular.module('acServerManager')
 				SKIN: '',
 				GUID: '',
 				SPECTATOR_MODE: '',
-				BALLAST: 0
+				BALLAST: 0,
+                RESTRICTOR: 0
 			};
 			$scope.selectedCarChanged();
 		}

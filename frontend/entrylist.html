@@ -123,37 +123,29 @@
 							<fieldset>
 								<legend>Add Player</legend>
 								<div class="row">
-									<div class="col-sm-3">
+									<div class="col-sm-4">
 										<div class="form-group">
 											<label>Name</label> <a href="#" title="Driver Manager" data-toggle="modal" data-target="#playerManager"></a>
 											<input class="form-control" ng-model="newEntry.DRIVERNAME"/>
 										</div>
 									</div>
 									
-									<div class="col-sm-3">
+									<div class="col-sm-4">
 										<div class="form-group">
 											<label>Team</label>
 											<input class="form-control" ng-model="newEntry.TEAM"/>
 										</div>
 									</div>
 									
-									<div class="col-sm-3">
+									<div class="col-sm-4">
 										<div class="form-group">
 											<label>GUID</label>
 											<input class="form-control" ng-model="newEntry.GUID"/>
 										</div>
 									</div>
-									
-									<div class="col-sm-3">
-										<div class="form-group">
-											<label>Ballast (Kg)</label>
-											<input type="number" min="0" required class="form-control" ng-model="newEntry.BALLAST"/>
-										</div>
-									</div>
-								</div>
-									
+                </div>
 								<div class="row">
-									<div class="col-sm-5">
+									<div class="col-sm-3">
 										<div class="form-group">
 											<label>Car</label>
 											<select class="form-control" ng-model="newEntry.MODEL" ng-options="car as car for car in cars" ng-change="selectedCarChanged()"></select>
@@ -182,10 +174,8 @@
 											</label>
 										</div>
 									</div>
-								</div>
-											
-								<div class="row">
-									<div class="col-sm-4">
+
+									<div class="col-sm-2">
 										<label>Spectator</label>
 										<div class="checkbox">
 											<label>
@@ -193,6 +183,22 @@
 											</label>
 										</div>
 									</div>
+								</div>
+											
+								<div class="row">
+									<div class="col-sm-2">
+										<div class="form-group">
+											<label>Ballast (Kg)</label>
+											<input type="number" min="0" required class="form-control" ng-model="newEntry.BALLAST"/>
+										</div>
+									</div>
+									<div class="col-sm-2">
+										<div class="form-group">
+											<label>Restrictor (0-100%)</label>
+											<input type="number" min="0" max="100" required class="form-control" ng-model="newEntry.RESTRICTOR"/>
+										</div>
+									</div>
+
 								</div>
 										
 								<div class="row top30">
@@ -215,6 +221,7 @@
 														<th>Skin</th>
 														<th>Spectator</th>
 														<th>Ballast</th>
+                            <th>Restrictor</th>
 														<th></th>
 													</tr>
 												</thead>
@@ -244,6 +251,9 @@
                             </td>
                             <td>
                               <input class="form-control" type="number" min="0" ng-model="entry.BALLAST" />
+                            </td>
+                            <td>
+                              <input class="form-control" type="number" min="0" max="100" ng-model="entry.RESTRICTOR" />
                             </td>
 														<td><a title="Remove" href="javascript:void(0);" ng-click="removeEntry($index)"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span><a/></td>
 													</tr>
