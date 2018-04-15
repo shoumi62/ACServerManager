@@ -1117,7 +1117,7 @@ app.post('/api/acserver', function (req, res) {
 
 			var dataString = String(data);
 
-			if (dataString.indexOf('OK') !== -1) {
+			if (dataString.indexOf('OK') !== -1 || dataString.indexOf('Server started') !== -1) {
 				acServerStatus = 1;
 			}
 			
@@ -1198,8 +1198,16 @@ app.get('/api/strackerserver/status', function (req, res) {
 // post start stracker server
 app.post('/api/strackerserver', function (req, res) {
 	try {
-		var sTracker = childProcess.spawn('stracker.exe', ['--stracker_ini', 'stracker.ini'], { cwd: sTrackerPath });
-		sTrackerServerPid = sTracker.pid;
+        var sTracker = undefined;
+
+        if (isRunningOnWindows) {
+            console.log('Starting Windows sTracker');
+    		sTracker = childProcess.spawn('stracker.exe', ['--stracker_ini', 'stracker.ini'], { cwd: sTrackerPath });
+        } else {
+            console.log('Starting Linux sTracker');
+            sTracker = childProcess.spawn('./stracker_linux_x86/stracker', ['--stracker_ini', 'stracker.ini'], { cwd: sTrackerPath });
+        }
+        sTrackerServerPid = sTracker.pid;
 		
 		if (sTrackerServerStatus == 0) {
 			sTrackerServerStatus = -1;
@@ -1232,7 +1240,13 @@ app.post('/api/strackerserver', function (req, res) {
 app.post('/api/strackerserver/stop', function (req, res) {
 	try {
 		if (sTrackerServerPid) {
-			childProcess.spawn('taskkill', ['/pid', sTrackerServerPid, '/f', '/t']);
+            if (isRunningOnWindows) {
+                console.log('Stopping Windows sTracker');
+    			childProcess.spawn('taskkill', ['/pid', sTrackerServerPid, '/f', '/t']);
+            } else {
+                console.log('Stopping Linux sTracker');
+                childProcess.spawn('kill', [sTrackerServerPid]);
+            }
 			sTrackerServerPid = undefined;
 		}
 
