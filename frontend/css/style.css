@@ -120,3 +120,8 @@ span.skinName {
     display: inline-block;
     margin: 2px;
 }
+pre {
+    max-height: 50em;
+    display: flex;
+    flex-direction: column-reverse;
+}
