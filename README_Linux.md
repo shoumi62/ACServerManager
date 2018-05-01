@@ -7,6 +7,9 @@ Start and stop the server, and stracker directly from the application, meaning y
 This is the installation guide for a Linux machine, to review the Windows installation guide go [here](https://github.com/jo3stevens/ACServerManager/blob/master/README.md).
 
 ## Updates
+01/05/2018
+* Dockerized! - Adding Docker build file to allow acserver & acmanager run in container. Still in testing!
+
 25/12/2017
 * Add support for uploading tracks (both single and multi-layout) and cars
 * Add support for removing existing tracks and cars
@@ -39,6 +42,7 @@ like [NVM](https://github.com/creationix/nvm) to manage the installation of Node
 After installing Node.js, install [PM2](https://github.com/Unitech/pm2) when using this
 version of AC Server Manager, it's basically Node.js application management tool with tons of features
 for production use. PM2 will make sure your web application stays online and, auto restarts if it crashes.
+A docker build file is also available, however it's still in testing.
 
 ## Install NVM
 To install NVM, follow the installation guide on its GitHub page [here](https://github.com/creationix/nvm). Please install NVM on the same account you run your Assetto Corsa Server.
@@ -98,6 +102,17 @@ To monitor applications running with PM2 run:
 pm2 list
 ```
 There many useful commands to manage applications using PM2, reference their GitHub page.
+
+## Docker
+Included is a docker build file to allow you to easily run the entire AC Game Server & AC Manager inside a container. To docker build currently grabs the latest version of steamcmd & installs all the necessary files, dependencies & executables on top of a ubuntu:xenial (16.04) image.
+Create a docker image:
+```
+sudo docker build --build-arg ACMANAGER_PORT=42555 --build-arg ACSERVER_PORT_1=9600 --build-arg ACSERVER_PORT_2=8081 -t pringlez/acserver-manager .
+```
+Create a container from the image:
+```
+sudo docker create --name acserver-manager --net=host -v </path/to/acmanager>:/home/gsa/acmanager -t pringlez/acserver-manager
+```
 
 ## Using ACServerManager
 * Browse to the application using your servers IP and the chosen port (or any DNS configured)
