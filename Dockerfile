@@ -18,9 +18,9 @@ RUN apt-get update \
 # Install SteamCMD & AC Server Files
 RUN mkdir -p /home/gsa/steamcmd
 RUN curl http://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz | tar -C /home/gsa/steamcmd -xzf-
-RUN mkdir /home/gsa/acserver /home/gsa/acmanager
+RUN mkdir /home/gsa/server /home/gsa/acmanager
 RUN chown -R gsa:gsa /home/gsa
-RUN /home/gsa/steamcmd/steamcmd.sh +@sSteamCmdForcePlatformType windows +login pubpaddy569 zxcqwe123 +force_install_dir /home/gsa/acserver +app_update 302550 +quit
+RUN /home/gsa/steamcmd/steamcmd.sh +@sSteamCmdForcePlatformType windows +login username password +force_install_dir /home/gsa/server +app_update 302550 +quit
 RUN rm -f /home/gsa/Steam/logs/*
 
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
@@ -40,6 +40,7 @@ ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
 ENV PATH $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
 RUN npm install pm2 -g
+RUN pm2 startup upstart
 
 # Install ACManager Files & Dependencies
 USER gsa
@@ -55,4 +56,6 @@ EXPOSE ${ACMANAGER_PORT}
 EXPOSE ${ACSERVER_PORT_1}
 EXPOSE ${ACSERVER_PORT_2}
 
-CMD ["pm2-runtime", "server.js"]
+USER gsa
+RUN pm2 start /home/gsa/acmanager/server.js
+RUN pm2 save
