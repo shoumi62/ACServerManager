@@ -8,12 +8,12 @@ This is the installation guide for a Linux machine, to review the Windows instal
 
 ## Updates
 01/05/2018
-* Dockerized! - Adding Docker build file to allow acserver & acmanager run in container. Still in testing!
+* Dockerized! - Adding Docker build file to allow ACServer & ACServerManager run in container. Still in testing!
 
 25/12/2017
 * Add support for uploading tracks (both single and multi-layout) and cars
 * Add support for removing existing tracks and cars
-* Bumping version of ACManager to 1.0.0!
+* Bumping version of ACServerManager to 1.0.0!
 
 21/12/2017
 * Update for 1.16 AC patch
@@ -40,7 +40,7 @@ This is the installation guide for a Linux machine, to review the Windows instal
 First you'll need to install Node.js on your machine. It's best to use an application 
 like [NVM](https://github.com/creationix/nvm) to manage the installation of Node.js on Linux based machines.
 After installing Node.js, install [PM2](https://github.com/Unitech/pm2) when using this
-version of AC Server Manager, it's basically Node.js application management tool with tons of features
+version of  Manager, it's basically Node.js application management tool with tons of features
 for production use. PM2 will make sure your web application stays online and, auto restarts if it crashes.
 A docker build file is also available, however it's still in testing.
 
@@ -104,20 +104,21 @@ pm2 list
 There many useful commands to manage applications using PM2, reference their GitHub page.
 
 ## Docker
-Included is a docker build file to allow you to easily run the entire AC Game Server & AC Manager inside a container. To docker build currently grabs the latest version of steamcmd & installs all the necessary files, dependencies & executables on top of a ubuntu:xenial (16.04) image.
+Included is a docker build file to allow you to easily run the entire ACServer & ACServerManager inside a container. The build currently grabs the latest version of steamcmd & installs all the necessary files, dependencies & executables on top of a ubuntu:xenial (16.04) image. You need to specify the ports you'll be using for the ACServer & ACServerManager. You also need to specify a username & password for steamcmd to download the ACServer files, I recommend making a new separate account for download server files for security reasons.
+Note: Having special characters in the provided password may produce errors in the image build process.
 Create a docker image:
 ```
-sudo docker build --build-arg ACMANAGER_PORT=42555 --build-arg ACSERVER_PORT_1=9600 --build-arg ACSERVER_PORT_2=8081 -t pringlez/acserver-manager .
+sudo docker build --build-arg ACMANAGER_PORT=42555 --build-arg ACSERVER_PORT_1=9600 --build-arg ACSERVER_PORT_2=8081 --build-arg STEAM_USERNAME=<your-username> --build-arg STEAM_PASSWORD=<your-password> -t pringlez/acserver-manager .
 ```
 Create a container from the image:
 ```
-sudo docker create --name acserver-manager --net=host -v </path/to/acmanager>:/home/gsa/acmanager -t pringlez/acserver-manager
+sudo docker create --name acserver-manager --net=host -t pringlez/acserver-manager
 ```
-
+Then just visit your server's address + ACServerManager port in your browser!
 ## Using ACServerManager
 * Browse to the application using your servers IP and the chosen port (or any DNS configured)
 * Click the 'Start' button under Assetto Corsa Server section
-* If using sTracker wait until the AC server has started and then click 'Start' in the sTracker Server section
+* If using sTracker wait until the ACServer has started and then click 'Start' in the sTracker Server section
 
 The server should now be running. You'll be able to see any server output in the command window and it will be logged to a file in the 'ACServerManager/log' folder.
 
