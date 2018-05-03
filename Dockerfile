@@ -1,6 +1,6 @@
 FROM ubuntu:xenial
 
-MAINTAINER pringlez <maintainer@pringlez>
+MAINTAINER John Walsh <pringlez@github.com>
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -30,9 +30,7 @@ RUN curl http://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz |
 RUN /home/gsa/steamcmd/steamcmd.sh +@sSteamCmdForcePlatformType windows +login ${STEAM_USERNAME} ${STEAM_PASSWORD} +force_install_dir /home/gsa/server +app_update 302550 +quit
 RUN rm -f /home/gsa/Steam/logs/*
 
-#RUN rm /bin/sh && ln -s /bin/bash /bin/sh
-
-# Install NVM, NodeJS, NPM & PM2
+# Install NodeJS, NPM & PM2
 RUN apt-get install python-software-properties
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
 RUN apt-get install nodejs
@@ -52,6 +50,6 @@ EXPOSE ${ACMANAGER_PORT}
 EXPOSE ${ACSERVER_PORT_1}
 EXPOSE ${ACSERVER_PORT_2}
 
-# Once container starts run the ACServerManager
+# Starts ACServerManager
 USER gsa
 CMD ["pm2-runtime", "server.js"]

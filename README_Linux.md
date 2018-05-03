@@ -8,7 +8,7 @@ This is the installation guide for a Linux machine, to review the Windows instal
 
 ## Updates
 01/05/2018
-* Dockerized! - Adding Docker build file to allow ACServer & ACServerManager run in container. Still in testing!
+* Dockerized! - Adding Docker build file to allow ACServer & ACServerManager run in a container.
 
 25/12/2017
 * Add support for uploading tracks (both single and multi-layout) and cars
@@ -26,7 +26,7 @@ This is the installation guide for a Linux machine, to review the Windows instal
 
 27/01/2017:
 * Update to UI layout
-* Added restart feature for AC & sTracker server
+* Added restart feature for ACServer & sTracker server
 
 17/10/2015:
 * Bug fix when switching between two tracks with multiple track configs
@@ -36,13 +36,12 @@ This is the installation guide for a Linux machine, to review the Windows instal
 22/08/2015:
 * Finished adding all the new settings from 1.2 including tyres and weather
 
-## Details
+## Installation Details
 First you'll need to install Node.js on your machine. It's best to use an application 
 like [NVM](https://github.com/creationix/nvm) to manage the installation of Node.js on Linux based machines.
 After installing Node.js, install [PM2](https://github.com/Unitech/pm2) when using this
 version of  Manager, it's basically Node.js application management tool with tons of features
 for production use. PM2 will make sure your web application stays online and, auto restarts if it crashes.
-A docker build file is also available, however it's still in testing.
 
 ## Install NVM
 To install NVM, follow the installation guide on its GitHub page [here](https://github.com/creationix/nvm). Please install NVM on the same account you run your Assetto Corsa Server.
@@ -75,15 +74,22 @@ to your Assetto Corsa Server directory. You can configure your username, passwor
 if you use sTracker, point the 'sTrackerPath' variable to your installation.
 
 * serverPath: The path to your Assetto Corsa server directory
-* contentPath: The path to your Assetto Corsa content directory
+* contentPath: The path to your Assetto Corsa content directory, use this if hosting on the same machine for gaming. Leave blank if hosting on Linux.
+* useLocalContent: If set to true, then ACServerManager will look for local car / track content
 * sTrackerPath: The path to your sTracker directory that contains stracker.exe (If you don't run stracker just leave this as an empty string ('') to disable it
 * username/password: Set these values if you want basic authentication on the application
 * port: The port that the application will listen on (Be sure to open up this port on your firewall)
 
-## Generating Local Content
-In order to get all cars and possible skins visible in the ACServerManager web UI, just run generate-frontend-content.sh -script in the root directory. These are not included since git repositories do not support empty directories.
-
 Note: I've currently set the Assetto Corsa Server installation to one directory up in 'server', change if necessary.
+
+## Generating Local Content
+On a remote Linux host machine, use the included script to generate empty folders of Assetto Corsa content, the ACServerManager web UI will use these folders.
+
+Generate folders run:
+```
+./generate-frontend-content.sh
+```
+These folders are not included since git repositories do not support empty directories.
 
 ## Firewall
 If your machine has a firewall enabled (i.e) iptables, you'll need to open / allow the ACServerManager port defined in your settings.js file.
@@ -103,18 +109,63 @@ pm2 list
 ```
 There many useful commands to manage applications using PM2, reference their GitHub page.
 
-## Docker
-Included is a docker build file to allow you to easily run the entire ACServer & ACServerManager inside a container. The build currently grabs the latest version of steamcmd & installs all the necessary files, dependencies & executables on top of a ubuntu:xenial (16.04) image. You need to specify the ports you'll be using for the ACServer & ACServerManager. You also need to specify a username & password for steamcmd to download the ACServer files, I recommend making a new separate account for download server files for security reasons.
-Note: Having special characters in the provided password may produce errors in the image build process.
-Create a docker image:
+## Docker Image
+You can use the docker image easily run the entire ACServer & ACServerManager inside a container. The build currently grabs the latest version of steamcmd & installs all the necessary files, dependencies & executables on top of a ubuntu:xenial (16.04) image. 
+
+Pull the latest image:
 ```
-sudo docker build --build-arg ACMANAGER_PORT=42555 --build-arg ACSERVER_PORT_1=9600 --build-arg ACSERVER_PORT_2=8081 --build-arg STEAM_USERNAME=<your-username> --build-arg STEAM_PASSWORD=<your-password> -t pringlez/acserver-manager .
+docker pull pringlez/acserver-manager
 ```
-Create a container from the image:
+To run the image directly:
 ```
-sudo docker create --name acserver-manager --net=host -t pringlez/acserver-manager
+docker run --restart unless-stopped --name acserver-manager --net=host -e PUID=<UID> -e PGID=<GID> -e TZ=<timezone> -v </path/to/acmanager>:/home/gsa/acmanager -v </path/to/acserver>:/home/gsa/server -t pringlez/acserver-manager
 ```
+
+To create a container:
+```
+docker create --restart unless-stopped --name acserver-manager --net=host -e PUID=<UID> -e PGID=<GID> -e TZ=<timezone> -v </path/to/acmanager>:/home/gsa/acmanager -v </path/to/acserver>:/home/gsa/server -t pringlez/acserver-manager
+```
+
 Then just visit your server's address + ACServerManager port in your browser!
+
+If you need to login to the running docker container:
+```
+docker exec -it acserver-manager /bin/bash
+```
+
+### Parameters
+The parameters you need to include are the following:
+
+* --net=host - Shares host networking with container, required.
+* --restart unless-stopped - This will restart your container if it crashes
+* -v /home/gsa/acmanager - Volume mount the ACServerManager installation directory (Optional)
+* -v /home/gsa/server - Volume mount the ACServer installation directory (Optional)
+* -e PGID for for GroupID - see below for explanation
+* -e PUID for for UserID - see below for explanation
+* -e TZ for timezone information, Europe/London
+
+### User / Group Identifiers
+Sometimes when using data volumes (-v flags) permissions issues can arise between the host OS and the container. We avoid this issue by allowing you to specify the user PUID and group PGID. Ensure the data volume directory on the host is owned by the same user you specify and it will "just work" <sup>TM</sup>.
+
+In this instance PUID=1001 and PGID=1001. To find yours use id user as below:
+```
+  $ id <dockeruser>
+    uid=1001(dockeruser) gid=1001(dockergroup) groups=1001(dockergroup)
+```
+
+### Building an Image
+You can however build a local image if want to include any new changes to ACServerManager.
+
+You need to specify the ports you'll be using for the ACServer & ACServerManager. The docker build will expose the ports you specify.
+You also need to specify a username & password for steamcmd to download the ACServer files, I recommend making a new separate account for download server files for security reasons.
+
+Note: Having special characters in the provided password may produce errors in the image build process.
+
+Build a local docker image by:
+```
+docker build --build-arg ACMANAGER_PORT=42555 --build-arg ACSERVER_PORT_1=9600 --build-arg ACSERVER_PORT_2=8081 --build-arg STEAM_USERNAME=<your-username> --build-arg STEAM_PASSWORD=<your-password> -t pringlez/acserver-manager .
+```
+
 ## Using ACServerManager
 * Browse to the application using your servers IP and the chosen port (or any DNS configured)
 * Click the 'Start' button under Assetto Corsa Server section
