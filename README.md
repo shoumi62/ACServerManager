@@ -132,7 +132,7 @@ Note: Having special characters in the provided password may produce errors in t
 
 Build a local docker image by:
 ```
-docker build --build-arg ACMANAGER_PORT=42555 --build-arg ACSERVER_PORT_1=9600 --build-arg ACSERVER_PORT_2=8081 --build-arg STEAM_USERNAME=<your-username> --build-arg STEAM_PASSWORD=<your-password> -t pringlez/acserver-manager .
+docker build --build-arg ACMANAGER_PORT=42555 --build-arg ACSERVER_PORT_1=9600 --build-arg ACSERVER_PORT_2=8081 --build-arg STEAM_USERNAME=<your-username> --build-arg STEAM_PASSWORD=<your-password> --build-arg VCS_REF=`git rev-parse --short HEAD` -t pringlez/acserver-manager .
 ```
 
 ## Using ACServerManager

@@ -19,10 +19,15 @@ ARG ACSERVER_PORT_1=9600
 ENV ACSERVER_PORT_1=${ACSERVER_PORT_1}
 ARG ACSERVER_PORT_2=8081
 ENV ACSERVER_PORT_2=${ACSERVER_PORT_2}
-ARG STEAM_USERNAME=anonymous
+ARG STEAM_USERNAME=your_steam_name
 ENV STEAM_USERNAME=${STEAM_USERNAME}
-ARG STEAM_PASSWORD=
+ARG STEAM_PASSWORD=your_steam_password
 ENV STEAM_PASSWORD=${STEAM_PASSWORD}
+
+# Args & Meta
+ARG VCS_REF
+LABEL org.label-schema.vcs-ref=$VCS_REF \
+    org.label-schema.vcs-url="https://github.com/Pringlez/ACServerManager"
 
 # Install SteamCMD & AC Server Files
 RUN mkdir -p /home/gsa/steamcmd /home/gsa/server /home/gsa/acmanager
