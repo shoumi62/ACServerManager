@@ -1,7 +1,11 @@
 # ACServerManager
-Web based server manager for Assetto Corsa directly manipulating the ini files on the server as an alternative to the windows app and having to copy files to your server.
+![ac-logo](https://www.assettocorsa.net/wp-content/themes/AssettoCorsa/00-Style-Dev/ico/mstile-150x150.png)
+
+Web based server manager for Assetto Corsa Server, that directly manipulating the ini files on the server as an alternative to the windows app and having to copy files to your server.
 
 Start and stop the server, and stracker directly from the application, meaning you can make changes to the server configuration and restart the server directly from your browser or mobile phone.
+
+Docker image available, see details below.
 
 ## ACServerManager on Linux
 This is the installation guide for a Linux machine, to review the Windows installation guide go [here](https://github.com/jo3stevens/ACServerManager/blob/master/README.md).
@@ -110,7 +114,9 @@ pm2 list
 There many useful commands to manage applications using PM2, reference their GitHub page.
 
 ## Docker Image
-You can use the docker image easily run the entire ACServer & ACServerManager inside a container. The build currently grabs the latest version of steamcmd & installs all the necessary files, dependencies & executables on top of a ubuntu:xenial (16.04) image. 
+You can use the docker image easily run the entire ACServer & ACServerManager inside a container. The build currently grabs the latest version of steamcmd & installs all the necessary files, dependencies & executables on top of a ubuntu:xenial (16.04) image.
+
+[![](https://images.microbadger.com/badges/image/pringlez/acserver-manager.svg)](https://microbadger.com/images/pringlez/acserver-manager "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/version/pringlez/acserver-manager.svg)](https://microbadger.com/images/pringlez/acserver-manager "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/pringlez/acserver-manager.svg)](https://microbadger.com/images/pringlez/acserver-manager "Get your own commit badge on microbadger.com")
 
 Pull the latest image:
 ```
@@ -118,7 +124,7 @@ docker pull pringlez/acserver-manager
 ```
 To run the image directly:
 ```
-docker run --restart unless-stopped --name acserver-manager --net=host -e PUID=<UID> -e PGID=<GID> -e TZ=<timezone> -v </path/to/acmanager>:/home/gsa/acmanager -v </path/to/acserver>:/home/gsa/server -t pringlez/acserver-manager
+docker run -d --restart unless-stopped --name acserver-manager --net=host -e PUID=<UID> -e PGID=<GID> -e TZ=<timezone> -v </path/to/acmanager>:/home/gsa/acmanager -v </path/to/acserver>:/home/gsa/server -t pringlez/acserver-manager
 ```
 
 To create a container:
