@@ -19,21 +19,11 @@ ARG ACSERVER_PORT_1=9600
 ENV ACSERVER_PORT_1=${ACSERVER_PORT_1}
 ARG ACSERVER_PORT_2=8081
 ENV ACSERVER_PORT_2=${ACSERVER_PORT_2}
-ARG STEAM_USERNAME=your_steam_name
-ENV STEAM_USERNAME=${STEAM_USERNAME}
-ARG STEAM_PASSWORD=your_steam_password
-ENV STEAM_PASSWORD=${STEAM_PASSWORD}
 
 # Args & Meta
 ARG VCS_REF
 LABEL org.label-schema.vcs-ref=$VCS_REF \
     org.label-schema.vcs-url="https://github.com/Pringlez/ACServerManager"
-
-# Install SteamCMD & AC Server Files
-RUN mkdir -p /home/gsa/steamcmd /home/gsa/server /home/gsa/acmanager
-RUN curl http://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz | tar -C /home/gsa/steamcmd -xzf-
-RUN /home/gsa/steamcmd/steamcmd.sh +@sSteamCmdForcePlatformType windows +login ${STEAM_USERNAME} ${STEAM_PASSWORD} +force_install_dir /home/gsa/server +app_update 302550 +quit
-RUN rm -f /home/gsa/Steam/logs/*
 
 # Install NodeJS, NPM & PM2
 RUN apt-get install python-software-properties
@@ -42,6 +32,7 @@ RUN apt-get install nodejs
 RUN npm install pm2 -g
 
 # Install ACManager Files & Dependencies
+RUN mkdir -p /home/gsa/server /home/gsa/acmanager
 WORKDIR /home/gsa/acmanager
 COPY . /home/gsa/acmanager
 RUN npm install
@@ -50,6 +41,7 @@ RUN chmod -R 775 /home/gsa
 RUN chown -R gsa:gsa /home/gsa
 
 # Volumes & Ports
+VOLUME /home/gsa/server
 VOLUME /home/gsa/acmanager
 EXPOSE ${ACMANAGER_PORT}
 EXPOSE ${ACSERVER_PORT_1}
