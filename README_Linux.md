@@ -12,7 +12,7 @@ This is the installation guide for a Linux machine, to review the Windows instal
 
 ## Updates
 01/05/2018
-* Dockerized! - Adding Docker build file to allow ACServer & ACServerManager run in a container.
+* Dockerized! - Adding Docker build file to allow ACServerManager run in a container.
 
 25/12/2017
 * Add support for uploading tracks (both single and multi-layout) and cars
@@ -84,7 +84,7 @@ if you use sTracker, point the 'sTrackerPath' variable to your installation.
 * username/password: Set these values if you want basic authentication on the application
 * port: The port that the application will listen on (Be sure to open up this port on your firewall)
 
-Note: I've currently set the Assetto Corsa Server installation to one directory up in 'server', change if necessary.
+**Note:** The Assetto Corsa Server installation directory is set to '../server', change if necessary.
 
 ## Generating Local Content
 On a remote Linux host machine, use the included script to generate empty folders of Assetto Corsa content, the ACServerManager web UI will use these folders.
@@ -122,17 +122,14 @@ Pull the latest image:
 ```
 docker pull pringlez/acserver-manager
 ```
-To run the image directly:
+To run the container:
 ```
-docker run -d --restart unless-stopped --name acserver-manager --net=host -e PUID=<UID> -e PGID=<GID> -e TZ=<timezone> -v </path/to/acmanager>:/home/gsa/acmanager -v </path/to/acserver>:/home/gsa/server -t pringlez/acserver-manager
-```
-
-To create a container:
-```
-docker create --restart unless-stopped --name acserver-manager --net=host -e PUID=<UID> -e PGID=<GID> -e TZ=<timezone> -v </path/to/acmanager>:/home/gsa/acmanager -v </path/to/acserver>:/home/gsa/server -t pringlez/acserver-manager
+sudo docker run -d --name acserver-manager --restart unless-stopped --net=host -e PUID=<UID> -e PGID=<GID> -e TZ=<timezone> -v </path/to/acserver>:/home/gsa/server pringlez/acserver-manager
 ```
 
 Then just visit your server's address + ACServerManager port in your browser!
+
+**Note:** If you want to change the port number the application runs on, you can build your own local image using the example below  & pass in the desired port number in the parameter.
 
 If you need to login to the running docker container:
 ```
@@ -144,8 +141,7 @@ The parameters you need to include are the following:
 
 * --net=host - Shares host networking with container, required.
 * --restart unless-stopped - This will restart your container if it crashes
-* -v /home/gsa/acmanager - Volume mount the ACServerManager installation directory (Optional)
-* -v /home/gsa/server - Volume mount the ACServer installation directory (Optional)
+* -v /home/gsa/server - Volume mount the ACServer installation directory (Required)
 * -e PGID for for GroupID - see below for explanation
 * -e PUID for for UserID - see below for explanation
 * -e TZ for timezone information, Europe/London
@@ -165,11 +161,11 @@ You can however build a local image if want to include any new changes to ACServ
 You need to specify the ports you'll be using for the ACServer & ACServerManager. The docker build will expose the ports you specify.
 You also need to specify a username & password for steamcmd to download the ACServer files, I recommend making a new separate account for download server files for security reasons.
 
-Note: Having special characters in the provided password may produce errors in the image build process.
+**Note:** Having special characters in the provided password may produce errors in the image build process.
 
 Build a local docker image by:
 ```
-docker build --build-arg ACMANAGER_PORT=42555 --build-arg ACSERVER_PORT_1=9600 --build-arg ACSERVER_PORT_2=8081 --build-arg VCS_REF=`git rev-parse --short HEAD` -t pringlez/acserver-manager .
+docker build --build-arg ACMANAGER_PORT=42555 --build-arg VCS_REF=`git rev-parse --short HEAD` -t pringlez/acserver-manager .
 ```
 
 ## Using ACServerManager
@@ -181,7 +177,7 @@ The server should now be running. You'll be able to see any server output in the
 
 You can change any of settings and it will be applied directly to server_cfg.ini and entry_list.ini on the server. After making a change just stop and start the server from the Server Status page to apply the changes to Assetto Corsa Server.
 
-Note, the server may fail to start in some cases if the Assetto Corsa Server cannot connect to the master server. Make sure you portforward / open
+**Note:** The server may fail to start in some cases if the Assetto Corsa Server cannot connect to the master server. Make sure you portforward / open
 the necessary ports for the server to function correctly.
 
 ## Screenshots

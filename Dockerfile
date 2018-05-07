@@ -15,10 +15,6 @@ RUN apt-get update \
 # Args & Env Vars
 ARG ACMANAGER_PORT=42555
 ENV ACMANAGER_PORT=${ACMANAGER_PORT}
-ARG ACSERVER_PORT_1=9600
-ENV ACSERVER_PORT_1=${ACSERVER_PORT_1}
-ARG ACSERVER_PORT_2=8081
-ENV ACSERVER_PORT_2=${ACSERVER_PORT_2}
 
 # Args & Meta
 ARG VCS_REF
@@ -37,15 +33,11 @@ WORKDIR /home/gsa/acmanager
 COPY . /home/gsa/acmanager
 RUN npm install
 RUN ./generate-frontend-content.sh
-RUN chmod -R 775 /home/gsa
 RUN chown -R gsa:gsa /home/gsa
 
 # Volumes & Ports
 VOLUME /home/gsa/server
-VOLUME /home/gsa/acmanager
 EXPOSE ${ACMANAGER_PORT}
-EXPOSE ${ACSERVER_PORT_1}
-EXPOSE ${ACSERVER_PORT_2}
 
 # Starts ACServerManager
 USER gsa
