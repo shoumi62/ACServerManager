@@ -158,10 +158,7 @@ In this instance PUID=1001 and PGID=1001. To find yours use id user as below:
 ### Building an Image
 You can however build a local image if want to include any new changes to ACServerManager.
 
-You need to specify the ports you'll be using for the ACServer & ACServerManager. The docker build will expose the ports you specify.
-You also need to specify a username & password for steamcmd to download the ACServer files, I recommend making a new separate account for download server files for security reasons.
-
-**Note:** Having special characters in the provided password may produce errors in the image build process.
+You need to specify the ports you'll be using for the ACServerManager. The docker build will expose the ports you specify.
 
 Build a local docker image by:
 ```
