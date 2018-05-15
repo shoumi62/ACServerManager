@@ -34,6 +34,7 @@ COPY . /home/gsa/acmanager
 RUN npm install
 RUN ./generate-frontend-content.sh
 RUN chown -R gsa:gsa /home/gsa
+RUN chmod -R 777 /home/gsa/acmanager
 
 # Volumes & Ports
 VOLUME /home/gsa/server

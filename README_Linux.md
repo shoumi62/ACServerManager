@@ -155,6 +155,9 @@ In this instance PUID=1001 and PGID=1001. To find yours use id user as below:
     uid=1001(dockeruser) gid=1001(dockergroup) groups=1001(dockergroup)
 ```
 
+#### Config Saving Issues
+If you have issues saving the configuration settings in ACServerManager application, while it's running in the docker container. Try 'chmod 777' your ACServer directory. This should allow the application inside the container access the mounted ACServer volume.
+
 ### Building an Image
 You can however build a local image if want to include any new changes to ACServerManager.
 
