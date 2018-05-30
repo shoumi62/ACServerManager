@@ -54,6 +54,8 @@ For cars it will copy the skins/* folder structure but not the files; this is ju
 ## Install Node.js
 To install Node.js, follow the installation guide on its home page [here](https://nodejs.org).
 
+I recommend using node version **v8.5.0** or newer, because of the upload content feature. Please see [comment](https://github.com/jo3stevens/ACServerManager/pull/36#issuecomment-393233010) for more information.
+
 ## Install ACServerManager
 Create a directory called 'acmanager', go into that directory and click [here](https://github.com/jo3stevens/ACServerManager/archive/master.zip) to download the latest version. Extract 
 the contents of the zip file into the directory.
@@ -83,7 +85,7 @@ npm install
 To run ACServerManager, execute the 'start.bat' file. If you see no errors, ACServerManager should now be running.
 
 ## Docker Image
-You can use the docker image easily run the entire ACServer & ACServerManager inside a container. The build currently grabs the latest version of steamcmd & installs all the necessary files, dependencies & executables on top of a ubuntu:xenial (16.04) image.
+You can use the docker image easily run the entire ACServerManager inside a container. The build currently grabs the latest version of steamcmd & installs all the necessary files, dependencies & executables on top of a ubuntu:xenial (16.04) image.
 
 [![](https://images.microbadger.com/badges/image/pringlez/acserver-manager.svg)](https://microbadger.com/images/pringlez/acserver-manager "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/version/pringlez/acserver-manager.svg)](https://microbadger.com/images/pringlez/acserver-manager "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/pringlez/acserver-manager.svg)](https://microbadger.com/images/pringlez/acserver-manager "Get your own commit badge on microbadger.com")
 

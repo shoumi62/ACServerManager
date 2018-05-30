@@ -57,8 +57,10 @@ nvm install node
 ```
 If you would like to install a specific version using NVM then run something like this:
 ```
-nvm install 6.9.4
+nvm install 8.5.0
 ```
+I recommend using node version **v8.5.0** or newer, because of the upload content feature. Please see [comment](https://github.com/jo3stevens/ACServerManager/pull/36#issuecomment-393233010) for more information.
+
 ## Install PM2
 To install PM2, follow the installation guide on its GitHub page [here](https://github.com/Unitech/pm2). Please install PM2 on the same account you run your Assetto Corsa Server.
 
@@ -114,7 +116,7 @@ pm2 list
 There many useful commands to manage applications using PM2, reference their GitHub page.
 
 ## Docker Image
-You can use the docker image easily run the entire ACServer & ACServerManager inside a container. The build currently grabs the latest version of steamcmd & installs all the necessary files, dependencies & executables on top of a ubuntu:xenial (16.04) image.
+You can use the docker image easily run the entire ACServerManager inside a container. The build currently grabs the latest version of steamcmd & installs all the necessary files, dependencies & executables on top of a ubuntu:xenial (16.04) image.
 
 [![](https://images.microbadger.com/badges/image/pringlez/acserver-manager.svg)](https://microbadger.com/images/pringlez/acserver-manager "Get your own image badge on microbadger.com") [![](https://images.microbadger.com/badges/version/pringlez/acserver-manager.svg)](https://microbadger.com/images/pringlez/acserver-manager "Get your own version badge on microbadger.com") [![](https://images.microbadger.com/badges/commit/pringlez/acserver-manager.svg)](https://microbadger.com/images/pringlez/acserver-manager "Get your own commit badge on microbadger.com")
 
