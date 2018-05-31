@@ -184,16 +184,28 @@ the necessary ports for the server to function correctly.
 
 ## Screenshots
 ### Server Status
-![Server Status](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-1.JPG)
+![Server Status](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-1.jpg)
 
 ### Server Configuration
-![Server Config](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-2.JPG)
+![Server Config](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-2.jpg)
 
 ### Entry List
-![Entry List](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-3.JPG)
+![Entry List](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-3.jpg)
 
 ### Rules
-![Rules](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-4.JPG)
+![Rules](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-4.jpg)
 
 ### Advanced
-![Advanced](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-5.JPG)
+![Advanced](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-5.jpg)
+
+### Templates
+![Templates](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-6.jpg)
+
+### Tracks
+![Tracks](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-7.jpg)
+
+### Cars
+![Cars](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-8.jpg)
+
+### Help
+![Help](http://deltahosting.dyndns.org:8080/acmanager/screen-cap-9.jpg)
