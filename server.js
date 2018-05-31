@@ -1,5 +1,6 @@
 var express = require('express');
 var fs = require('fs');
+var copyFileSync = require('fs-copy-file-sync'); // shim in case user has node < v8.5.0
 var ini = require('ini');
 var multiLine = require('multi-ini');
 var bodyParser = require('body-parser');
@@ -114,7 +115,7 @@ function writeLogFile(filename, message) {
 		fs.appendFile(__dirname + '/logs/' + filename, message + '\r\n', function (err) {});
 	} catch (e) {
 		console.log('Error - ' + e);
-	}	
+	}
 }
 
 function updateServerLog(message) {
@@ -236,7 +237,7 @@ app.post('/api/server', function (req, res) {
 		for (var param in req.body) {
 			config.SERVER[param.toUpperCase()] = req.body[param];
 		}
-		
+
 		saveConfig();
 		res.status(200);
 		res.send('OK');
@@ -735,12 +736,12 @@ app.get('/api/tracks/:track/:config/image', function (req, res) {
 function copyTrack(serverTrackPath, contentTrackPath, surfaces, drs_zones, preview, ui_track) {
     mkdirp.sync(serverTrackPath);
     mkdirp.sync(contentTrackPath);
-    fs.copyFileSync(surfaces.path, serverTrackPath + 'surfaces.ini');
+    copyFileSync(surfaces.path, serverTrackPath + 'surfaces.ini');
     if (drs_zones !== null && drs_zones !== undefined) {
-        fs.copyFileSync(drs_zones.path, serverTrackPath + 'drs_zones.ini');
+        copyFileSync(drs_zones.path, serverTrackPath + 'drs_zones.ini');
     }
-    fs.copyFileSync(preview.path, contentTrackPath + 'preview.png');
-    fs.copyFileSync(ui_track.path, contentTrackPath + 'ui_track.json');
+    copyFileSync(preview.path, contentTrackPath + 'preview.png');
+    copyFileSync(ui_track.path, contentTrackPath + 'ui_track.json');
 }
 
 function addSingleLayoutTrack(track) {
@@ -844,7 +845,7 @@ function modifyCarModTyres(car) {
 function copyCarFiles(serverCarPath, files) {
     mkdirp.sync(serverCarPath);
     _.forEach(files, function(file) {
-        fs.copyFileSync(file.path, serverCarPath + file.originalname);
+        copyFileSync(file.path, serverCarPath + file.originalname);
     });
 }
 
@@ -1128,7 +1129,7 @@ app.post('/api/acserver', function (req, res) {
 			if (dataString.indexOf('OK') !== -1 || dataString.indexOf('Server started') !== -1) {
 				acServerStatus = 1;
 			}
-			
+
 		    if (dataString.indexOf('stracker has been restarted') !== -1) {
 				sTrackerServerStatus = 1
 			}
@@ -1222,7 +1223,7 @@ app.post('/api/strackerserver', function (req, res) {
             sTracker = childProcess.spawn('./stracker_linux_x86/stracker', ['--stracker_ini', 'stracker.ini'], { cwd: sTrackerPath });
         }
         sTrackerServerPid = sTracker.pid;
-		
+
 		if (sTrackerServerStatus == 0) {
 			sTrackerServerStatus = -1;
 		}
@@ -1313,8 +1314,8 @@ app.post('/api/templates', function (req, res) {
         var templateDir = contentPath + '/templates/' + uuid;
         // TODO: assert existence and generate new uuidv4?
         fs.mkdirSync(templateDir);
-        fs.copyFileSync(serverPath + 'cfg/server_cfg.ini', templateDir + '/server_cfg.ini');
-        fs.copyFileSync(serverPath + 'cfg/entry_list.ini', templateDir + '/entry_list.ini');
+        copyFileSync(serverPath + 'cfg/server_cfg.ini', templateDir + '/server_cfg.ini');
+        copyFileSync(serverPath + 'cfg/entry_list.ini', templateDir + '/entry_list.ini');
         jsonfile.writeFileSync(templateDir + '/config.json', template);
 
         res.status(200);
